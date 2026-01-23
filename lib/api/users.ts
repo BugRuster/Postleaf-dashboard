@@ -11,23 +11,50 @@ import apiClient from './client';
 export type TickType = 'blue' | 'golden';
 
 /**
- * User data structure
+ * User data structure from API
  */
 export interface User {
-  id: string;
+  _id: string;
   username: string;
-  email: string;
-  tick: TickType | null;
-  createdAt: string;
-  updatedAt: string;
+  first_name: string;
+  last_name: string;
+  blueTick: boolean;
+  goldenTick: boolean;
+  profile_picture?: string;
+  bio?: string;
+  isVerified?: boolean;
+  premium?: boolean;
+  isPrivate?: boolean;
+}
+
+/**
+ * Paginated users response
+ */
+export interface PaginatedUsersResponse {
+  status: string;
+  data: {
+    users: User[];
+    meta: {
+      limit: number;
+      hasMore: boolean;
+      cursor: string;
+    };
+  };
 }
 
 /**
  * User search response structure
  */
 export interface UserSearchResponse {
-  users: User[];
-  total: number;
+  status: string;
+  message: string;
+  results: User[];
+  searchType: string;
+  pagination: {
+    currentPage: number;
+    limit: number;
+    totalResults: number;
+  };
 }
 
 /**
@@ -38,14 +65,27 @@ export interface UpdateTickRequest {
 }
 
 /**
- * Searches for users by username or email (super_admin only)
- * @param query - The search query (username or email)
+ * Fetches all users with pagination
+ * @param cursor - Optional cursor for pagination
+ * @param limit - Number of users per page (default 20)
+ * @returns Promise with paginated users
+ */
+export async function getAllUsers(cursor?: string, limit: number = 20): Promise<PaginatedUsersResponse> {
+  const params: Record<string, any> = { limit };
+  if (cursor) {
+    params.cursor = cursor;
+  }
+  const response = await apiClient.get<PaginatedUsersResponse>('/user', { params });
+  return response.data;
+}
+
+/**
+ * Searches for users by username
+ * @param query - The search query (username)
  * @returns Promise with search results
  */
 export async function searchUsers(query: string): Promise<UserSearchResponse> {
-  const response = await apiClient.get<UserSearchResponse>('/d/users/search', {
-    params: { q: query },
-  });
+  const response = await apiClient.get<UserSearchResponse>(`/search?q=${encodeURIComponent(query)}&type=user`);
   return response.data;
 }
 

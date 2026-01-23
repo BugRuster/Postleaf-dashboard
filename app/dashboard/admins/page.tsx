@@ -12,6 +12,7 @@ import {
 import { getUser } from "@/lib/auth/token";
 import { canAccessAdminManagement } from "@/lib/auth/permissions";
 import { AdminList } from "@/components/admins/AdminList";
+import { UserSelectionModal } from "@/components/admins/UserSelectionModal";
 import { Button } from "@/components/ui/button";
 
 export default function AdminsPage() {
@@ -21,6 +22,7 @@ export default function AdminsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Check permissions
   useEffect(() => {
@@ -40,8 +42,8 @@ export default function AdminsPage() {
         limit: 10,
       });
       setAdmins(response.data);
-      setCurrentPage(response.page);
-      setTotalPages(response.totalPages);
+      setCurrentPage(response.pagination.page);
+      setTotalPages(response.pagination.totalPages);
     } catch (err) {
       console.error("Failed to fetch admins:", err);
       setError("Failed to load admins. Please try again.");
@@ -69,9 +71,9 @@ export default function AdminsPage() {
     }
   };
 
-  const handleDemote = async (adminId: string) => {
+  const handleDemote = async (userId: string) => {
     try {
-      await demoteAdmin(adminId);
+      await demoteAdmin(userId);
       // Refresh the list
       await fetchAdmins(currentPage);
     } catch (err) {
@@ -91,7 +93,12 @@ export default function AdminsPage() {
             Manage administrators and their permissions
           </p>
         </div>
-        <Button onClick={() => fetchAdmins(currentPage)}>Refresh</Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => fetchAdmins(currentPage)}>
+            Refresh
+          </Button>
+          <Button onClick={() => setIsModalOpen(true)}>Create Admin</Button>
+        </div>
       </div>
 
       {error && (
@@ -105,9 +112,14 @@ export default function AdminsPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        onPromote={handlePromote}
         onDemote={handleDemote}
         loading={loading}
+      />
+
+      <UserSelectionModal
+        open={isModalOpen}
+        onOpenChange={setIsModalOpen}
+        onPromote={handlePromote}
       />
     </div>
   );

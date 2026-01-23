@@ -1,58 +1,62 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter, useParams } from "next/navigation"
-import { getAdminById, type Admin } from "@/lib/api/admins"
-import { getUser } from "@/lib/auth/token"
-import { canAccessAdminManagement } from "@/lib/auth/permissions"
-import { AdminDetailsForm } from "@/components/admins/AdminDetailsForm"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import Link from "next/link"
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import { getAdminById, type Admin } from "@/lib/api/admins";
+import { getUser } from "@/lib/auth/token";
+import { canAccessAdminManagement } from "@/lib/auth/permissions";
+import { AdminDetailsForm } from "@/components/admins/AdminDetailsForm";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 export default function AdminDetailsPage() {
-  const router = useRouter()
-  const params = useParams()
-  const adminId = params.id as string
+  const router = useRouter();
+  const params = useParams();
+  const userId = params.id as string;
 
-  const [admin, setAdmin] = useState<Admin | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [admin, setAdmin] = useState<Admin | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Check permissions
   useEffect(() => {
-    const user = getUser()
+    const user = getUser();
     if (!user || !canAccessAdminManagement(user.role)) {
-      router.push("/dashboard")
+      router.push("/dashboard");
     }
-  }, [router])
+  }, [router]);
 
   // Fetch admin details
   const fetchAdmin = async () => {
-    setLoading(true)
-    setError(null)
+    console.log("calling, fetch admin");
+    setLoading(true);
+    setError(null);
     try {
-      const adminData = await getAdminById(adminId)
-      setAdmin(adminData)
+      const adminData = await getAdminById(userId);
+      console.log("fetched admin, ", adminData);
+      setAdmin(adminData);
     } catch (err) {
-      console.error("Failed to fetch admin details:", err)
-      setError("Failed to load admin details. Please try again.")
+      console.error("Failed to fetch admin details:", err);
+      setError("Failed to load admin details. Please try again.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    if (adminId) {
-      fetchAdmin()
+    if (userId) {
+      fetchAdmin();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adminId])
+  }, [userId]);
 
   const handleUpdate = () => {
     // Refresh admin data after update
-    fetchAdmin()
-  }
+    fetchAdmin();
+  };
+
+  console.log("admin, ", admin);
 
   if (loading) {
     return (
@@ -61,7 +65,7 @@ export default function AdminDetailsPage() {
         <Skeleton className="h-64 w-full" />
         <Skeleton className="h-64 w-full" />
       </div>
-    )
+    );
   }
 
   if (error || !admin) {
@@ -77,7 +81,7 @@ export default function AdminDetailsPage() {
           {error || "Admin not found"}
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -86,7 +90,7 @@ export default function AdminDetailsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Admin Details</h1>
           <p className="text-muted-foreground">
-            Manage settings for {admin.email}
+            Manage settings for @{admin.username}
           </p>
         </div>
         <Link href="/dashboard/admins">
@@ -96,5 +100,5 @@ export default function AdminDetailsPage() {
 
       <AdminDetailsForm admin={admin} onUpdate={handleUpdate} />
     </div>
-  )
+  );
 }

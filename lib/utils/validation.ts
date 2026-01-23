@@ -44,23 +44,17 @@ export type LoginFormData = z.infer<typeof loginSchema>
 
 /**
  * Admin validity update schema
- * Validates validity period (date string or duration)
+ * Validates validity period in days (positive number, max 30)
  */
 export const validitySchema = z.object({
   validity: z
-    .string()
-    .min(1, "Validity period is required")
-    .refine(
-      (value) => {
-        // Check if it's a valid date format (YYYY-MM-DD) or duration (e.g., "1 year", "6 months")
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/
-        const durationRegex = /^\d+\s+(day|days|week|weeks|month|months|year|years)$/i
-        return dateRegex.test(value) || durationRegex.test(value)
-      },
-      {
-        message: "Please enter a valid date (YYYY-MM-DD) or duration (e.g., '1 year', '6 months')",
-      }
-    ),
+    .number({
+      required_error: "Validity period is required",
+      invalid_type_error: "Validity must be a number",
+    })
+    .int("Validity must be a whole number")
+    .positive("Validity must be a positive number")
+    .max(30, "Validity cannot exceed 30 days"),
 })
 
 export type ValidityFormData = z.infer<typeof validitySchema>
