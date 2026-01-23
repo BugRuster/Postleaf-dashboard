@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, TickType } from "@/lib/api/users";
+import { User } from "@/lib/api/users";
 import {
   Table,
   TableBody,
@@ -25,7 +25,7 @@ import { MagnifyingGlass } from "@phosphor-icons/react";
 interface TickManagementProps {
   onSearch: (query: string) => void;
   searchResults: User[];
-  onUpdateTick: (userId: string, tick: TickType | null) => Promise<void>;
+  onUpdateTick: (userId: string, tick: 'blue' | 'golden' | null) => Promise<void>;
   loading?: boolean;
 }
 
@@ -52,10 +52,14 @@ export function TickManagement({
   useEffect(() => {
     if (debouncedQuery.trim().length >= 2) {
       onSearch(debouncedQuery);
+    } else if (debouncedQuery.trim().length === 0) {
+      // Clear results when search is cleared
+      onSearch("");
     }
-  }, [debouncedQuery, onSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedQuery]);
 
-  const handleUpdateTick = async (userId: string, tick: TickType | null) => {
+  const handleUpdateTick = async (userId: string, tick: 'blue' | 'golden' | null) => {
     setActionLoading(userId);
     try {
       await onUpdateTick(userId, tick);
@@ -64,15 +68,20 @@ export function TickManagement({
     }
   };
 
-  const getTickBadge = (tick: TickType | null) => {
-    if (!tick) {
-      return <Badge variant="outline">No Tick</Badge>;
+  const getTickBadge = (user: User) => {
+    if (user.goldenTick) {
+      return <Badge variant="default">Golden Tick</Badge>;
     }
-    return (
-      <Badge variant={tick === "golden" ? "default" : "secondary"}>
-        {tick === "golden" ? "Golden Tick" : "Blue Tick"}
-      </Badge>
-    );
+    if (user.blueTick) {
+      return <Badge variant="secondary">Blue Tick</Badge>;
+    }
+    return <Badge variant="outline">No Tick</Badge>;
+  };
+
+  const getCurrentTickValue = (user: User) => {
+    if (user.goldenTick) return "golden";
+    if (user.blueTick) return "blue";
+    return "none";
   };
 
   return (
@@ -131,24 +140,21 @@ export function TickManagement({
                 </TableRow>
               ) : (
                 searchResults.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user._id}>
                     <TableCell className="font-medium">
                       {user.username}
                     </TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{getTickBadge(user.tick)}</TableCell>
+                    <TableCell>{getTickBadge(user)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <Select
-                          value={user.tick || "none"}
+                          value={getCurrentTickValue(user)}
                           onValueChange={(value) => {
-                            const tick =
-                              value === "none"
-                                ? null
-                                : (value as TickType);
-                            handleUpdateTick(user.id, tick);
+                            const tick = value === "none" ? null : (value as 'blue' | 'golden');
+                            handleUpdateTick(user._id, tick);
                           }}
-                          disabled={actionLoading === user.id}
+                          disabled={actionLoading === user._id}
                         >
                           <SelectTrigger className="w-[140px]">
                             <SelectValue placeholder="Select tick" />
@@ -159,7 +165,7 @@ export function TickManagement({
                             <SelectItem value="golden">Golden Tick</SelectItem>
                           </SelectContent>
                         </Select>
-                        {actionLoading === user.id && (
+                        {actionLoading === user._id && (
                           <span className="text-sm text-muted-foreground">
                             Updating...
                           </span>

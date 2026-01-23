@@ -5,32 +5,24 @@
 
 import apiClient from './client';
 
-/**
- * Tick type - blue or golden verification badge
- */
-export type TickType = 'blue' | 'golden';
-
-/**
- * User data structure from API
- */
 export interface User {
   _id: string;
   username: string;
   first_name: string;
   last_name: string;
+  email: string;
+  profile_picture: string;
+  bio: string;
+  isVerified: boolean;
   blueTick: boolean;
   goldenTick: boolean;
-  profile_picture?: string;
-  bio?: string;
-  isVerified?: boolean;
-  premium?: boolean;
-  isPrivate?: boolean;
+  premium: boolean;
+  isAdmin: boolean;
+  isPrivate: boolean;
+  role: string;
 }
 
-/**
- * Paginated users response
- */
-export interface PaginatedUsersResponse {
+export interface PaginatedResponse {
   status: string;
   data: {
     users: User[];
@@ -42,9 +34,6 @@ export interface PaginatedUsersResponse {
   };
 }
 
-/**
- * User search response structure
- */
 export interface UserSearchResponse {
   status: string;
   message: string;
@@ -57,45 +46,25 @@ export interface UserSearchResponse {
   };
 }
 
-/**
- * Update tick request
- */
-export interface UpdateTickRequest {
-  tick: TickType | null;
-}
-
-/**
- * Fetches all users with pagination
- * @param cursor - Optional cursor for pagination
- * @param limit - Number of users per page (default 20)
- * @returns Promise with paginated users
- */
-export async function getAllUsers(cursor?: string, limit: number = 20): Promise<PaginatedUsersResponse> {
+export async function getAllUsers(cursor?: string, limit: number = 20): Promise<PaginatedResponse> {
   const params: Record<string, any> = { limit };
   if (cursor) {
     params.cursor = cursor;
   }
-  const response = await apiClient.get<PaginatedUsersResponse>('/user', { params });
+  const response = await apiClient.get<PaginatedResponse>('/user', { params });
   return response.data;
 }
 
-/**
- * Searches for users by username
- * @param query - The search query (username)
- * @returns Promise with search results
- */
 export async function searchUsers(query: string): Promise<UserSearchResponse> {
   const response = await apiClient.get<UserSearchResponse>(`/search?q=${encodeURIComponent(query)}&type=user`);
   return response.data;
 }
 
-/**
- * Updates a user's tick status (super_admin only)
- * @param userId - The ID of the user
- * @param data - The tick update data (tick type or null to remove)
- * @returns Promise with updated user data
- */
-export async function updateUserTick(userId: string, data: UpdateTickRequest): Promise<User> {
-  const response = await apiClient.put<User>(`/d/users/${userId}/tick`, data);
+export async function updateUserTick(
+  userId: string, 
+  blueTick?: boolean, 
+  goldenTick?: boolean
+): Promise<User> {
+  const response = await apiClient.put<User>(`/d/users/${userId}/tick`, { blueTick, goldenTick });
   return response.data;
 }

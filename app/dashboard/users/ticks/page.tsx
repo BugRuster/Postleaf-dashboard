@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   searchUsers,
   updateUserTick,
   type User,
-  type TickType,
 } from "@/lib/api/users";
 import { getUser } from "@/lib/auth/token";
 import { canAccessUserTicks } from "@/lib/auth/permissions";
@@ -27,7 +26,7 @@ export default function UserTicksPage() {
     }
   }, [router]);
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     if (query.trim().length < 2) {
       setUsers([]);
       return;
@@ -38,7 +37,7 @@ export default function UserTicksPage() {
     setSuccessMessage(null);
     try {
       const response = await searchUsers(query);
-      setUsers(response.users);
+      setUsers(response.results);
     } catch (err) {
       console.error("Failed to search users:", err);
       setError("Failed to search users. Please try again.");
@@ -46,21 +45,32 @@ export default function UserTicksPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const handleUpdateTick = async (userId: string, tick: TickType | null) => {
+  const handleUpdateTick = async (userId: string, tick: 'blue' | 'golden' | null) => {
     setError(null);
     setSuccessMessage(null);
+    
+    // Find the current user to get their username
+    const currentUser = users.find(u => u._id === userId);
+    
     try {
-      const updatedUser = await updateUserTick(userId, { tick });
+      const blueTick = tick === 'blue';
+      const goldenTick = tick === 'golden';
+      const response = await updateUserTick(userId, blueTick, goldenTick);
+      
+      // Handle both direct user response and wrapped response
+      const updatedUser = 'data' in response ? (response as any).data : response;
+      
       // Update the user in the list
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
-          user.id === userId ? { ...user, tick: updatedUser.tick } : user
+          user._id === userId ? { ...user, blueTick: updatedUser.blueTick, goldenTick: updatedUser.goldenTick } : user
         )
       );
+      
       setSuccessMessage(
-        `Successfully updated tick for ${updatedUser.username}`
+        `Successfully updated tick for ${currentUser?.username || 'user'}`
       );
       // Clear success message after 3 seconds
       setTimeout(() => setSuccessMessage(null), 3000);
