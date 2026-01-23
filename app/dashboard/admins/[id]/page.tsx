@@ -1,0 +1,100 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter, useParams } from "next/navigation"
+import { getAdminById, type Admin } from "@/lib/api/admins"
+import { getUser } from "@/lib/auth/token"
+import { canAccessAdminManagement } from "@/lib/auth/permissions"
+import { AdminDetailsForm } from "@/components/admins/AdminDetailsForm"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
+import Link from "next/link"
+
+export default function AdminDetailsPage() {
+  const router = useRouter()
+  const params = useParams()
+  const adminId = params.id as string
+
+  const [admin, setAdmin] = useState<Admin | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Check permissions
+  useEffect(() => {
+    const user = getUser()
+    if (!user || !canAccessAdminManagement(user.role)) {
+      router.push("/dashboard")
+    }
+  }, [router])
+
+  // Fetch admin details
+  const fetchAdmin = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const adminData = await getAdminById(adminId)
+      setAdmin(adminData)
+    } catch (err) {
+      console.error("Failed to fetch admin details:", err)
+      setError("Failed to load admin details. Please try again.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (adminId) {
+      fetchAdmin()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [adminId])
+
+  const handleUpdate = () => {
+    // Refresh admin data after update
+    fetchAdmin()
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-12 w-full" />
+        <Skeleton className="h-64 w-full" />
+        <Skeleton className="h-64 w-full" />
+      </div>
+    )
+  }
+
+  if (error || !admin) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-bold tracking-tight">Admin Details</h1>
+          <Link href="/dashboard/admins">
+            <Button variant="outline">Back to List</Button>
+          </Link>
+        </div>
+        <div className="rounded-md bg-destructive/15 p-4 text-destructive">
+          {error || "Admin not found"}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Admin Details</h1>
+          <p className="text-muted-foreground">
+            Manage settings for {admin.email}
+          </p>
+        </div>
+        <Link href="/dashboard/admins">
+          <Button variant="outline">Back to List</Button>
+        </Link>
+      </div>
+
+      <AdminDetailsForm admin={admin} onUpdate={handleUpdate} />
+    </div>
+  )
+}
