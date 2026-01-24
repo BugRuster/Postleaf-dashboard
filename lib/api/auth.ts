@@ -3,7 +3,7 @@
  * Handles login and authentication-related API calls
  */
 
-import apiClient from './client';
+import apiClient from "./client";
 
 /**
  * Login request payload with email
@@ -35,8 +35,10 @@ export interface User {
   first_name: string;
   last_name: string;
   email: string;
+  password?: string | undefined;
   profile_picture: string;
   bio: string;
+  firebaseUid?: string;
   credentialsAuth: boolean;
   googleAuth: boolean;
   appleAuth: boolean;
@@ -46,17 +48,13 @@ export interface User {
   premium: boolean;
   isAdmin: boolean;
   isPrivate: boolean;
-  role: 'admin' | 'super_admin';
-  adminCredits: number;
-  createdAt: string;
-  updatedAt: string;
-  notificationSettings?: {
-    muteNotifications: boolean;
-    pushEnabled: boolean;
-  };
-  encryptionKeys?: {
-    oneTimePreKeys: unknown[];
-  };
+  role: "user" | "admin" | "super_admin";
+  adminValidity?: number;
+  adminExpiryTime?: Date;
+  allocated_credits: number;
+  available_credits: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**
@@ -69,7 +67,7 @@ export interface LoginResponse {
     user: User;
     token: string;
     provider: string;
-    role: 'admin' | 'super_admin';
+    role: "admin" | "super_admin";
   };
 }
 
@@ -79,6 +77,9 @@ export interface LoginResponse {
  * @returns Promise with login response containing token and user data
  */
 export async function login(credentials: LoginRequest): Promise<LoginResponse> {
-  const response = await apiClient.post<LoginResponse>('/auth/login', credentials);
+  const response = await apiClient.post<LoginResponse>(
+    "/auth/login",
+    credentials,
+  );
   return response.data;
 }

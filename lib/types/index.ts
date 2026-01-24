@@ -63,10 +63,11 @@ export type {
 // ============================================================================
 
 export type {
-  Content,
-  Advertisement,
+  ContentItem,
+  ContentResponse,
   CreateAdRequest,
-  UpdateAdRequest,
+  UpdateAdLinkRequest,
+  Pagination,
 } from '@/lib/api/ads';
 
 // ============================================================================
@@ -76,6 +77,7 @@ export type {
 export type {
   TimelineDataPoint,
   ContentTypeAnalytics,
+  TopContentItem,
   AnalyticsData,
   ContentAnalyticsData,
 } from '@/lib/api/analytics';
@@ -85,10 +87,9 @@ export type {
 // ============================================================================
 
 export type {
-  TickType,
   User,
   UserSearchResponse,
-  UpdateTickRequest,
+  PaginatedResponse as UserPaginatedResponse,
 } from '@/lib/api/users';
 
 // ============================================================================

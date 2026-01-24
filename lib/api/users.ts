@@ -3,7 +3,7 @@
  * Handles user-related API calls including search and tick management
  */
 
-import apiClient from './client';
+import apiClient from "./client";
 
 export interface User {
   _id: string;
@@ -11,15 +11,24 @@ export interface User {
   first_name: string;
   last_name: string;
   email: string;
+  password?: string | undefined;
   profile_picture: string;
   bio: string;
+  firebaseUid?: string;
+  credentialsAuth: boolean;
+  googleAuth: boolean;
+  appleAuth: boolean;
   isVerified: boolean;
   blueTick: boolean;
   goldenTick: boolean;
   premium: boolean;
   isAdmin: boolean;
   isPrivate: boolean;
-  role: string;
+  role: "user" | "admin" | "super_admin";
+  adminValidity?: number;
+  adminExpiryTime?: Date;
+  allocated_credits: number;
+  available_credits: number;
 }
 
 export interface PaginatedResponse {
@@ -46,25 +55,33 @@ export interface UserSearchResponse {
   };
 }
 
-export async function getAllUsers(cursor?: string, limit: number = 20): Promise<PaginatedResponse> {
+export async function getAllUsers(
+  cursor?: string,
+  limit: number = 20,
+): Promise<PaginatedResponse> {
   const params: Record<string, any> = { limit };
   if (cursor) {
     params.cursor = cursor;
   }
-  const response = await apiClient.get<PaginatedResponse>('/user', { params });
+  const response = await apiClient.get<PaginatedResponse>("/user", { params });
   return response.data;
 }
 
 export async function searchUsers(query: string): Promise<UserSearchResponse> {
-  const response = await apiClient.get<UserSearchResponse>(`/search?q=${encodeURIComponent(query)}&type=user`);
+  const response = await apiClient.get<UserSearchResponse>(
+    `/search?q=${encodeURIComponent(query)}&type=user`,
+  );
   return response.data;
 }
 
 export async function updateUserTick(
-  userId: string, 
-  blueTick?: boolean, 
-  goldenTick?: boolean
+  userId: string,
+  blueTick?: boolean,
+  goldenTick?: boolean,
 ): Promise<User> {
-  const response = await apiClient.put<User>(`/d/users/${userId}/tick`, { blueTick, goldenTick });
+  const response = await apiClient.put<User>(`/d/users/${userId}/tick`, {
+    blueTick,
+    goldenTick,
+  });
   return response.data;
 }

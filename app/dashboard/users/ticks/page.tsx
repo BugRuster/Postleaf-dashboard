@@ -21,7 +21,7 @@ export default function UserTicksPage() {
   // Check permissions
   useEffect(() => {
     const user = getUser();
-    if (!user || !canAccessUserTicks(user.role)) {
+    if (!user || user.role === "user" || !canAccessUserTicks(user.role as "admin" | "super_admin")) {
       router.push("/dashboard");
     }
   }, [router]);

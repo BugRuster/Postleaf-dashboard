@@ -142,7 +142,7 @@ export function AdminList({
                   <TableCell>
                     <Badge variant="secondary">{admin.role}</Badge>
                   </TableCell>
-                  <TableCell>{admin.adminCredits}</TableCell>
+                  <TableCell>{admin.available_credits}</TableCell>
                   <TableCell className="text-right space-x-2">
                     <Link href={`/dashboard/admins/${admin._id}`}>
                       <Button variant="outline" size="sm">

@@ -92,7 +92,7 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
     resolver: zodResolver(creditsSchema),
     mode: "onBlur", // Validate on blur for better UX
     defaultValues: {
-      credits: admin.adminCredits,
+      credits: admin.allocated_credits,
     },
   });
 
@@ -176,6 +176,18 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
               >
                 {admin.role}
               </Badge>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Allocated Credits
+              </p>
+              <p className="text-lg">{admin.allocated_credits}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">
+                Available Credits
+              </p>
+              <p className="text-lg">{admin.available_credits}</p>
             </div>
             <div>
               <p className="text-sm font-medium text-muted-foreground">
@@ -289,23 +301,41 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
       {/* Update Credits Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Update Credits</CardTitle>
+          <CardTitle>Update Allocated Credits</CardTitle>
           <CardDescription>
-            Set the credit amount for this admin account
+            Set the allocated credit amount for this admin account (does not affect available credits)
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Current Credits Display */}
+          <div className="mb-6 p-4 bg-muted rounded-lg">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  Current Allocated Credits
+                </p>
+                <p className="text-2xl font-bold">{admin.allocated_credits}</p>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-1">
+                  Available Credits
+                </p>
+                <p className="text-2xl font-bold">{admin.available_credits}</p>
+              </div>
+            </div>
+          </div>
+
           <form
             onSubmit={handleSubmitCredits(onSubmitCredits)}
             className="space-y-4"
           >
             <Field>
-              <FieldLabel htmlFor="credits">Credits</FieldLabel>
+              <FieldLabel htmlFor="credits">New Allocated Credits</FieldLabel>
               <Input
                 id="credits"
                 type="number"
                 min="0"
-                placeholder="Enter credit amount"
+                placeholder="Enter allocated credit amount"
                 {...registerCredits("credits", { valueAsNumber: true })}
                 disabled={isUpdatingCredits}
               />
@@ -354,11 +384,11 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
       <AlertDialog open={creditsDialogOpen} onOpenChange={setCreditsDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Credits Update</AlertDialogTitle>
+            <AlertDialogTitle>Confirm Allocated Credits Update</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to update the credits for{" "}
+              Are you sure you want to update the allocated credits for{" "}
               <strong>@{admin.username}</strong> ({admin.email}) to{" "}
-              <strong>{pendingCreditsData?.credits} credits</strong>?
+              <strong>{pendingCreditsData?.credits} credits</strong>? This will not affect their available credits.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

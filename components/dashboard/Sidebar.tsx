@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname, useRouter } from "next/navigation"
+import { usePathname } from "next/navigation"
+import { useTheme } from "next-themes"
 import { 
   House, 
   ChartBar, 
@@ -9,18 +10,19 @@ import {
   Flag, 
   Users, 
   CheckCircle,
-  SignOut,
+  UserCircle,
+  Moon,
+  Sun,
   type Icon as PhosphorIcon
 } from "@phosphor-icons/react"
-import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { removeToken } from "@/lib/auth/token"
 import { 
   canAccessAdminManagement, 
   canAccessUserTicks,
   type UserRole 
 } from "@/lib/auth/permissions"
 import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 
 interface SidebarProps {
   userRole: UserRole
@@ -70,12 +72,7 @@ const navItems: NavItem[] = [
 
 export function Sidebar({ userRole }: SidebarProps) {
   const pathname = usePathname()
-  const router = useRouter()
-
-  const handleLogout = () => {
-    removeToken()
-    router.push("/login")
-  }
+  const { theme, setTheme } = useTheme()
 
   // Filter navigation items based on user role
   const visibleNavItems = navItems.filter((item) => {
@@ -89,6 +86,10 @@ export function Sidebar({ userRole }: SidebarProps) {
     
     return true
   })
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark")
+  }
 
   return (
     <div className="flex h-full w-64 flex-col border-r bg-background">
@@ -126,16 +127,39 @@ export function Sidebar({ userRole }: SidebarProps) {
 
       <Separator />
 
-      {/* Logout Button */}
-      <div className="p-4">
+      {/* Theme Toggle & Profile */}
+      <div className="space-y-2 p-4">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3"
-          onClick={handleLogout}
+          size="sm"
+          onClick={toggleTheme}
+          className="w-full justify-start gap-3 px-3 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
         >
-          <SignOut className="size-5" />
-          Logout
+          {theme === "dark" ? (
+            <>
+              <Sun className="size-5" />
+              Light Mode
+            </>
+          ) : (
+            <>
+              <Moon className="size-5" />
+              Dark Mode
+            </>
+          )}
         </Button>
+        
+        <Link
+          href="/dashboard/profile"
+          className={cn(
+            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+            pathname === "/dashboard/profile"
+              ? "bg-primary text-primary-foreground"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <UserCircle className="size-5" weight={pathname === "/dashboard/profile" ? "fill" : "regular"} />
+          Profile
+        </Link>
       </div>
     </div>
   )

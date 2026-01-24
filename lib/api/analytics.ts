@@ -21,36 +21,42 @@ export interface TimelineDataPoint {
  * Analytics data for a specific content type
  */
 export interface ContentTypeAnalytics {
-  total: number;
-  active: number;
-  totalViews: number;
-  totalLikes: number;
-  totalShares: number;
-  totalComments: number;
-  averageEngagement: number;
+  count: number;
+  views: number;
+}
+
+/**
+ * Top content item
+ */
+export interface TopContentItem {
+  id: string;
+  type: 'post' | 'cut' | 'event';
+  title: string;
+  views: number;
 }
 
 /**
  * Aggregated analytics data for all content types
  */
 export interface AnalyticsData {
+  totalViews: number;
   posts: ContentTypeAnalytics;
   cuts: ContentTypeAnalytics;
   events: ContentTypeAnalytics;
+  topContent: TopContentItem[];
 }
 
 /**
  * Detailed analytics data for specific content
  */
 export interface ContentAnalyticsData {
-  contentId: string;
-  contentType: 'post' | 'cut' | 'event';
+  id: string;
+  type: 'post' | 'cut' | 'event';
   views: number;
   likes: number;
-  shares: number;
   comments: number;
-  engagementRate: number;
-  timeline: TimelineDataPoint[];
+  isAd: boolean;
+  createdAt: string;
 }
 
 /**
@@ -58,22 +64,22 @@ export interface ContentAnalyticsData {
  * @returns Promise with analytics data for posts, cuts, and events
  */
 export async function getAnalytics(): Promise<AnalyticsData> {
-  const response = await apiClient.get<AnalyticsData>('/d/analytics');
-  return response.data;
+  const response = await apiClient.get<{ data: AnalyticsData }>('/d/analytics');
+  return response.data.data;
 }
 
 /**
  * Fetches detailed analytics for specific content
  * @param contentType - The type of content (post, cut, or event)
  * @param contentId - The ID of the specific content
- * @returns Promise with detailed analytics including timeline data
+ * @returns Promise with detailed analytics data
  */
 export async function getContentAnalytics(
   contentType: 'post' | 'cut' | 'event',
   contentId: string
 ): Promise<ContentAnalyticsData> {
-  const response = await apiClient.get<ContentAnalyticsData>(
+  const response = await apiClient.get<{ data: ContentAnalyticsData }>(
     `/d/analytics/${contentType}/${contentId}`
   );
-  return response.data;
+  return response.data.data;
 }

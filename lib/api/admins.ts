@@ -9,10 +9,18 @@ import apiClient from "./client";
  * Admin status data returned from the backend
  */
 export interface AdminStatus {
+  adminId: string;
   role: string;
-  credits: number;
-  validity: string;
-  activeAds: number;
+  adminValidity: number | null;
+  adminExpiryTime: string | null;
+  allocated_credits: number;
+  available_credits: number;
+  activeAds: {
+    posts: number;
+    cuts: number;
+    events: number;
+    total: number;
+  };
 }
 
 /**
@@ -24,20 +32,27 @@ export interface Admin {
   first_name: string;
   last_name: string;
   email: string;
+  password?: string | undefined;
   profile_picture: string;
   bio: string;
+  firebaseUid?: string;
+  credentialsAuth: boolean;
+  googleAuth: boolean;
+  appleAuth: boolean;
   isVerified: boolean;
   blueTick: boolean;
   goldenTick: boolean;
   premium: boolean;
   isAdmin: boolean;
   isPrivate: boolean;
-  createdAt: string;
-  updatedAt: string;
-  role: "admin" | "super_admin";
-  adminCredits: number;
-  adminExpiryTime?: string;
+  role: "user" | "admin" | "super_admin";
   adminValidity?: number;
+  adminExpiryTime?: Date;
+  allocated_credits: number;
+  available_credits: number;
+
+  createdAt: Date;
+  updatedAt: string;
 }
 
 /**
@@ -83,10 +98,12 @@ export interface UpdateCreditsRequest {
  * @returns Promise with admin status data (role, credits, validity, active ads count)
  */
 export async function getAdminStatus(userId: string): Promise<AdminStatus> {
-  const response = await apiClient.get<AdminStatus>(
-    `/d/admins/${userId}/status`,
-  );
-  return response.data;
+  const response = await apiClient.get<{
+    status: string;
+    message: string;
+    data: AdminStatus;
+  }>(`/d/admins/${userId}/status`);
+  return response.data.data;
 }
 
 /**

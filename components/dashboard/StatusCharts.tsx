@@ -18,14 +18,19 @@ export function StatusCharts({ data, loading = false }: StatusChartsProps) {
   // Prepare chart data from admin status
   const chartData = [
     {
-      name: "Credits",
-      value: data.credits,
+      name: "Allocated",
+      value: data.allocated_credits || 0,
       fill: "hsl(var(--chart-1))",
     },
     {
-      name: "Active Ads",
-      value: data.activeAds,
+      name: "Available",
+      value: data.available_credits || 0,
       fill: "hsl(var(--chart-2))",
+    },
+    {
+      name: "Active Ads",
+      value: data.activeAds?.total ?? 0,
+      fill: "hsl(var(--chart-3))",
     },
   ];
 
@@ -33,13 +38,17 @@ export function StatusCharts({ data, loading = false }: StatusChartsProps) {
     value: {
       label: "Value",
     },
-    credits: {
-      label: "Credits",
+    allocated: {
+      label: "Allocated Credits",
       color: "hsl(var(--chart-1))",
+    },
+    available: {
+      label: "Available Credits",
+      color: "hsl(var(--chart-2))",
     },
     activeAds: {
       label: "Active Ads",
-      color: "hsl(var(--chart-2))",
+      color: "hsl(var(--chart-3))",
     },
   };
 

@@ -4,7 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Eye, FileText, Scissors, CalendarBlank } from "@phosphor-icons/react/dist/ssr"
 import type { AnalyticsData } from "@/lib/api/analytics"
+import Link from "next/link"
 
 interface AnalyticsOverviewProps {
   data: AnalyticsData | null
@@ -15,17 +19,19 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-[200px]" />
-          <Skeleton className="h-[200px]" />
-          <Skeleton className="h-[200px]" />
+        <div className="grid gap-4 md:grid-cols-4">
+          <Skeleton className="h-[140px]" />
+          <Skeleton className="h-[140px]" />
+          <Skeleton className="h-[140px]" />
+          <Skeleton className="h-[140px]" />
         </div>
+        <Skeleton className="h-[350px]" />
         <Skeleton className="h-[400px]" />
       </div>
     )
   }
 
-  if (!data || !data.posts || !data.cuts || !data.events) {
+  if (!data) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4">
         <p className="text-sm text-red-800">No analytics data available</p>
@@ -37,174 +43,179 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
   const chartData = [
     {
       contentType: "Posts",
-      total: data.posts.total || 0,
-      active: data.posts.active || 0,
-      views: data.posts.totalViews || 0,
-      engagement: data.posts.averageEngagement || 0,
+      count: data.posts.count || 0,
+      views: data.posts.views || 0,
     },
     {
       contentType: "Cuts",
-      total: data.cuts.total || 0,
-      active: data.cuts.active || 0,
-      views: data.cuts.totalViews || 0,
-      engagement: data.cuts.averageEngagement || 0,
+      count: data.cuts.count || 0,
+      views: data.cuts.views || 0,
     },
     {
       contentType: "Events",
-      total: data.events.total || 0,
-      active: data.events.active || 0,
-      views: data.events.totalViews || 0,
-      engagement: data.events.averageEngagement || 0,
+      count: data.events.count || 0,
+      views: data.events.views || 0,
     },
   ]
 
   const chartConfig = {
-    total: {
-      label: "Total",
+    count: {
+      label: "Count",
       color: "hsl(var(--chart-1))",
-    },
-    active: {
-      label: "Active",
-      color: "hsl(var(--chart-2))",
     },
     views: {
       label: "Views",
-      color: "hsl(var(--chart-3))",
+      color: "hsl(var(--chart-2))",
     },
-    engagement: {
-      label: "Avg Engagement",
-      color: "hsl(var(--chart-4))",
-    },
+  }
+
+  const getContentIcon = (type: string) => {
+    switch (type) {
+      case 'post':
+        return <FileText className="h-4 w-4" />
+      case 'cut':
+        return <Scissors className="h-4 w-4" />
+      case 'event':
+        return <CalendarBlank className="h-4 w-4" />
+      default:
+        return null
+    }
+  }
+
+  const getContentBadgeColor = (type: string) => {
+    switch (type) {
+      case 'post':
+        return 'default'
+      case 'cut':
+        return 'secondary'
+      case 'event':
+        return 'outline'
+      default:
+        return 'default'
+    }
   }
 
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
-          <CardHeader>
-            <CardTitle>Posts</CardTitle>
-            <CardDescription>Post analytics summary</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Views</CardTitle>
+            <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total:</span>
-              <span className="font-medium">{data.posts.total || 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Active:</span>
-              <span className="font-medium">{data.posts.active || 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total Views:</span>
-              <span className="font-medium">{(data.posts.totalViews || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total Likes:</span>
-              <span className="font-medium">{(data.posts.totalLikes || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Avg Engagement:</span>
-              <span className="font-medium">{(data.posts.averageEngagement || 0).toFixed(2)}%</span>
-            </div>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.totalViews.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground mt-1">Across all content</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Cuts</CardTitle>
-            <CardDescription>Cut analytics summary</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Posts</CardTitle>
+            <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total:</span>
-              <span className="font-medium">{data.cuts.total || 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Active:</span>
-              <span className="font-medium">{data.cuts.active || 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total Views:</span>
-              <span className="font-medium">{(data.cuts.totalViews || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total Likes:</span>
-              <span className="font-medium">{(data.cuts.totalLikes || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Avg Engagement:</span>
-              <span className="font-medium">{(data.cuts.averageEngagement || 0).toFixed(2)}%</span>
-            </div>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.posts.count}</div>
+            <p className="text-xs text-muted-foreground mt-1">{data.posts.views.toLocaleString()} views</p>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Events</CardTitle>
-            <CardDescription>Event analytics summary</CardDescription>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Cuts</CardTitle>
+            <Scissors className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total:</span>
-              <span className="font-medium">{data.events.total || 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Active:</span>
-              <span className="font-medium">{data.events.active || 0}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total Views:</span>
-              <span className="font-medium">{(data.events.totalViews || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Total Likes:</span>
-              <span className="font-medium">{(data.events.totalLikes || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Avg Engagement:</span>
-              <span className="font-medium">{(data.events.averageEngagement || 0).toFixed(2)}%</span>
-            </div>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.cuts.count}</div>
+            <p className="text-xs text-muted-foreground mt-1">{data.cuts.views.toLocaleString()} views</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Events</CardTitle>
+            <CalendarBlank className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{data.events.count}</div>
+            <p className="text-xs text-muted-foreground mt-1">{data.events.views.toLocaleString()} views</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts */}
+      {/* Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Content Comparison</CardTitle>
-          <CardDescription>Compare metrics across content types</CardDescription>
+          <CardTitle>Content Overview</CardTitle>
+          <CardDescription>Content count and views by type</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[400px]">
+          <ChartContainer config={chartConfig} className="h-[300px]">
             <BarChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="contentType" />
               <YAxis />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="total" fill="var(--color-total)" radius={4} />
-              <Bar dataKey="active" fill="var(--color-active)" radius={4} />
+              <Bar dataKey="count" fill="var(--color-count)" radius={4} />
+              <Bar dataKey="views" fill="var(--color-views)" radius={4} />
             </BarChart>
           </ChartContainer>
         </CardContent>
       </Card>
 
+      {/* Top Content Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Engagement Metrics</CardTitle>
-          <CardDescription>Views and engagement by content type</CardDescription>
+          <CardTitle>Top Content</CardTitle>
+          <CardDescription>Most viewed content across all types</CardDescription>
         </CardHeader>
         <CardContent>
-          <ChartContainer config={chartConfig} className="h-[400px]">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="contentType" />
-              <YAxis />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="views" fill="var(--color-views)" radius={4} />
-              <Bar dataKey="engagement" fill="var(--color-engagement)" radius={4} />
-            </BarChart>
-          </ChartContainer>
+          {data.topContent && data.topContent.length > 0 ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead className="text-right">Views</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.topContent.map((content) => (
+                  <TableRow key={content.id}>
+                    <TableCell>
+                      <Badge variant={getContentBadgeColor(content.type)} className="flex items-center gap-1 w-fit">
+                        {getContentIcon(content.type)}
+                        <span className="capitalize">{content.type}</span>
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium max-w-md truncate">
+                      {content.title}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <Eye className="h-3 w-3 text-muted-foreground" />
+                        {content.views.toLocaleString()}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Link 
+                        href={`/dashboard/analytics/${content.type}/${content.id}`}
+                        className="text-sm text-primary hover:underline"
+                      >
+                        View Details
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              No content data available
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

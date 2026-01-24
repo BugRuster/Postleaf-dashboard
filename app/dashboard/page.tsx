@@ -73,18 +73,18 @@ export default function DashboardPage() {
                 loading={loading}
               />
               <StatusCard
-                title="Credits"
-                value={adminStatus?.credits || 0}
+                title="Available Credits"
+                value={adminStatus?.available_credits || 0}
                 loading={loading}
               />
               <StatusCard
                 title="Validity"
-                value={adminStatus?.validity || '-'}
+                value={adminStatus?.adminValidity ? `${adminStatus.adminValidity} days` : '-'}
                 loading={loading}
               />
               <StatusCard
                 title="Active Ads"
-                value={adminStatus?.activeAds || 0}
+                value={adminStatus?.activeAds?.total ?? 0}
                 loading={loading}
               />
             </div>

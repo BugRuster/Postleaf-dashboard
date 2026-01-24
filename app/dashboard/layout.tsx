@@ -16,7 +16,7 @@ export default function DashboardLayout({
   // Compute auth state directly - will be null on server, actual value on client
   const user =
     typeof window !== "undefined" && isAuthenticated() ? getUser() : null;
-  const userRole = user?.role ?? ("admin" as const);
+  const userRole = (user?.role === "user" ? "admin" : user?.role ?? "admin") as "admin" | "super_admin";
   const isLoading = typeof window === "undefined" || !user;
 
   useEffect(() => {
