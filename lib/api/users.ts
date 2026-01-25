@@ -74,6 +74,31 @@ export async function searchUsers(query: string): Promise<UserSearchResponse> {
   return response.data;
 }
 
+export interface GetUsersWithTicksResponse {
+  status: string;
+  message: string;
+  data: User[];
+  pagination: { page: number; limit: number };
+}
+
+export type TickTypeFilter = "blue" | "golden" | "both";
+
+/**
+ * Get users with blue or golden ticks.
+ * GET /d/users/ticks?page=1&limit=20&tickType=blue|golden|both
+ */
+export async function getUsersWithTicks(
+  page: number = 1,
+  limit: number = 20,
+  tickType: TickTypeFilter = "both",
+): Promise<GetUsersWithTicksResponse> {
+  const response = await apiClient.get<GetUsersWithTicksResponse>(
+    "/d/users/ticks",
+    { params: { page, limit, tickType } },
+  );
+  return response.data;
+}
+
 export async function updateUserTick(
   userId: string,
   blueTick?: boolean,

@@ -209,34 +209,8 @@ export type UpdateTickFormData = z.infer<typeof updateTickSchema>
  * Validates report filter fields
  */
 export const reportFiltersSchema = z.object({
-  contentType: z.enum(["post", "cut", "event", "all"]).optional(),
+  contentType: z.enum(["post", "cut", "event", "user", "all"]).optional(),
   status: z.enum(["pending", "dismissed", "resolved", "all"]).optional(),
-  dateFrom: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        if (!value) return true
-        const date = new Date(value)
-        return !isNaN(date.getTime())
-      },
-      {
-        message: "Please enter a valid date",
-      }
-    ),
-  dateTo: z
-    .string()
-    .optional()
-    .refine(
-      (value) => {
-        if (!value) return true
-        const date = new Date(value)
-        return !isNaN(date.getTime())
-      },
-      {
-        message: "Please enter a valid date",
-      }
-    ),
 })
 
 export type ReportFiltersFormData = z.infer<typeof reportFiltersSchema>

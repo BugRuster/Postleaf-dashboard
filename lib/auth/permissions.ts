@@ -31,12 +31,12 @@ export function canAccessUserTicks(role: UserRole): boolean {
 
 /**
  * Checks if a user can access reports management
- * Both admins and super_admins can access reports
+ * Only super_admins can access reports
  * @param role - The user's role
  * @returns True if the user can access reports, false otherwise
  */
 export function canAccessReports(role: UserRole): boolean {
-  return role === 'admin' || role === 'super_admin';
+  return role === 'super_admin';
 }
 
 /**

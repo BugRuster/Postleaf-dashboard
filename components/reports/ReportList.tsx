@@ -19,7 +19,7 @@ interface ReportListProps {
   currentPage: number
   totalPages: number
   onPageChange: (page: number) => void
-  onDismiss: (reportId: string) => Promise<void>
+  onView: (report: Report) => void
   loading?: boolean
 }
 
@@ -28,19 +28,9 @@ export function ReportList({
   currentPage,
   totalPages,
   onPageChange,
-  onDismiss,
+  onView,
   loading = false,
 }: ReportListProps) {
-  const [actionLoading, setActionLoading] = useState<string | null>(null)
-
-  const handleDismiss = async (reportId: string) => {
-    setActionLoading(reportId)
-    try {
-      await onDismiss(reportId)
-    } finally {
-      setActionLoading(null)
-    }
-  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -73,6 +63,8 @@ export function ReportList({
         return 'secondary'
       case 'event':
         return 'outline'
+      case 'user':
+        return 'destructive'
       default:
         return 'secondary'
     }
@@ -80,67 +72,61 @@ export function ReportList({
 
   if (loading) {
     return (
-      <div className="space-y-4">
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
-        <Skeleton className="h-12 w-full" />
+      <div className="space-y-3">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-md border">
+    <div className="space-y-3">
+      <div className="rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Content Type</TableHead>
+              <TableHead>Type</TableHead>
               <TableHead>Reason</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Reported By</TableHead>
-              <TableHead>Reported At</TableHead>
+              <TableHead>By</TableHead>
+              <TableHead>Date</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="w-[100px]" />
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reports?.length === 0 ? (
+            {!reports?.length ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
                   No reports found
                 </TableCell>
               </TableRow>
             ) : (
-              reports?.map((report) => (
+              reports.map((report) => (
                 <TableRow key={report.id}>
                   <TableCell>
-                    <Badge variant={getContentTypeVariant(report.contentType)}>
+                    <Badge variant={getContentTypeVariant(report.contentType)} className="font-normal">
                       {report.contentType}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-medium">{report.reason}</TableCell>
-                  <TableCell className="max-w-xs truncate">
-                    {report.description}
-                  </TableCell>
-                  <TableCell>{report.reportedBy}</TableCell>
-                  <TableCell>{formatDate(report.reportedAt)}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">{report.reason}</TableCell>
+                  <TableCell className="text-muted-foreground">{report.reportedBy}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{formatDate(report.reportedAt)}</TableCell>
                   <TableCell>
-                    <Badge variant={getStatusVariant(report.status)}>
+                    <Badge variant={getStatusVariant(report.status)} className="font-normal">
                       {report.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    {report.status === 'pending' && (
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => handleDismiss(report.id)}
-                        disabled={actionLoading === report.id}
-                      >
-                        {actionLoading === report.id ? "Dismissing..." : "Dismiss"}
-                      </Button>
-                    )}
+                  <TableCell>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7"
+                      onClick={() => onView(report)}
+                    >
+                      View
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))
@@ -149,23 +135,22 @@ export function ReportList({
         </Table>
       </div>
 
-      {/* Pagination Controls */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground">
-          Page {currentPage} of {totalPages}
-        </div>
-        <div className="flex gap-2">
+      <div className="flex items-center justify-between text-sm text-muted-foreground">
+        <span>Page {currentPage} of {totalPages}</span>
+        <div className="flex gap-1">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
+            className="h-8"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            Previous
+            Prev
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
+            className="h-8"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >

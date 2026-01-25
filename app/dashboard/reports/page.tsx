@@ -1,32 +1,42 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   getReports,
-  dismissReport,
   type Report,
-  type ReportFilters,
   type ReportListResponse,
 } from "@/lib/api/reports";
+import { getUser } from "@/lib/auth/token";
+import { canAccessReports } from "@/lib/auth/permissions";
 import { ReportList } from "@/components/reports/ReportList";
-import { ReportFilters as ReportFiltersComponent } from "@/components/reports/ReportFilters";
+import { ViewReportModal } from "@/components/reports/ViewReportModal";
 import { Button } from "@/components/ui/button";
+import { ArrowsClockwise } from "@phosphor-icons/react";
 
 export default function ReportsPage() {
+  const router = useRouter();
   const [reports, setReports] = useState<Report[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [filters, setFilters] = useState<ReportFilters>({});
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  // Fetch reports
-  const fetchReports = async (page: number, currentFilters: ReportFilters = {}) => {
+  // Check permissions
+  useEffect(() => {
+    const user = getUser();
+    if (!user || user.role === "user" || !canAccessReports(user.role as "admin" | "super_admin")) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
+  const fetchReports = async (page: number) => {
     setLoading(true);
     setError(null);
     try {
       const response: ReportListResponse = await getReports({
-        ...currentFilters,
         page,
         limit: 10,
       });
@@ -42,60 +52,62 @@ export default function ReportsPage() {
   };
 
   useEffect(() => {
-    fetchReports(currentPage, filters);
+    fetchReports(currentPage);
   }, [currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const handleDismiss = async (reportId: string) => {
-    try {
-      await dismissReport(reportId);
-      // Refresh the list
-      await fetchReports(currentPage, filters);
-    } catch (err) {
-      console.error("Failed to dismiss report:", err);
-      setError("Failed to dismiss report. Please try again.");
-    }
+  const handleView = async (report: Report) => {
+    setSelectedReport(report);
+    setModalOpen(true);
   };
 
-  const handleFilterChange = (newFilters: ReportFilters) => {
-    setFilters(newFilters);
-    setCurrentPage(1);
-    fetchReports(1, newFilters);
+  const handleModalSuccess = () => {
+    fetchReports(currentPage);
+  };
+
+  const handleRefresh = () => {
+    fetchReports(currentPage);
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Reports Management
-          </h1>
-          <p className="text-muted-foreground">
-            Review and manage user-submitted reports
-          </p>
-        </div>
-        <Button onClick={() => fetchReports(currentPage, filters)}>Refresh</Button>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h1 className="text-xl font-semibold">Reports</h1>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleRefresh}
+          disabled={loading}
+        >
+          <ArrowsClockwise className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          Refresh
+        </Button>
       </div>
 
       {error && (
-        <div className="rounded-md bg-destructive/15 p-4 text-destructive">
-          {error}
-        </div>
+        <p className="text-sm text-destructive">{error}</p>
       )}
-
-      <ReportFiltersComponent onFilterChange={handleFilterChange} />
 
       <ReportList
         reports={reports}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        onDismiss={handleDismiss}
+        onView={handleView}
         loading={loading}
       />
+
+      {selectedReport && (
+        <ViewReportModal
+          report={selectedReport}
+          open={modalOpen}
+          onOpenChange={setModalOpen}
+          onSuccess={handleModalSuccess}
+        />
+      )}
     </div>
   );
 }

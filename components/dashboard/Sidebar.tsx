@@ -45,6 +45,7 @@ const navItems: NavItem[] = [
     label: "Reports",
     href: "/dashboard/reports",
     icon: Flag,
+    requiredRole: 'super_admin',
   },
   {
     label: "Advertisements",

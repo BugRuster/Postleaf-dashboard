@@ -11,22 +11,21 @@ import apiClient from './client';
 export interface Report {
   id: string;
   contentId: string;
-  contentType: 'post' | 'cut' | 'event';
+  contentType: 'post' | 'cut' | 'event' | 'user';
   reason: string;
   description: string;
   reportedBy: string;
   reportedAt: string;
   status: 'pending' | 'dismissed' | 'resolved';
+  rawData?: RawReport; // Include raw data for detailed view
 }
 
 /**
  * Report filters for querying reports
  */
 export interface ReportFilters {
-  contentType?: 'post' | 'cut' | 'event';
+  contentType?: 'post' | 'cut' | 'event' | 'user';
   status?: 'pending' | 'dismissed' | 'resolved';
-  dateFrom?: string;
-  dateTo?: string;
   page?: number;
   limit?: number;
 }
@@ -43,23 +42,94 @@ export interface ReportListResponse {
   hasPrev: boolean;
 }
 
+/** Backend response shape: { status, message, data, pagination } */
+interface ReportsApiResponse {
+  status: string;
+  message: string;
+  data: RawReport[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+/** Raw report shape from backend */
+interface RawReport {
+  _id: string;
+  user_id?: { _id: string; username?: string; email?: string; profile_picture?: string };
+  cut_id?: { _id: string; caption?: string; type?: string; media_url?: string } | null;
+  post_id?: { _id: string; caption?: string; type?: string; image_url?: string[] };
+  reported_user_id?: { _id: string; username?: string; email?: string; profile_picture?: string };
+  reason: string;
+  status: 'pending' | 'dismissed' | 'resolved';
+  createdAt: string;
+  updatedAt?: string;
+}
+
+function rawReportToReport(raw: RawReport): Report {
+  const contentType: Report['contentType'] = raw.reported_user_id
+    ? 'user'
+    : raw.post_id
+      ? 'post'
+      : raw.cut_id
+        ? 'cut'
+        : 'post';
+  const contentId =
+    raw.post_id?._id || raw.cut_id?._id || raw.reported_user_id?._id || '';
+  const description =
+    raw.post_id?.caption ||
+    raw.cut_id?.caption ||
+    (raw.reported_user_id ? `User: ${raw.reported_user_id.username || ''}` : '') ||
+    '—';
+  return {
+    id: raw._id,
+    contentId,
+    contentType,
+    reason: raw.reason,
+    description,
+    reportedBy: raw.user_id?.username ?? 'Unknown',
+    reportedAt: raw.createdAt,
+    status: raw.status,
+    rawData: raw, // Include raw data
+  };
+}
+
 /**
  * Fetches a paginated list of reports with optional filters
  * @param filters - Optional filters for content type, status, date range, and pagination
  * @returns Promise with paginated report list
  */
 export async function getReports(filters?: ReportFilters): Promise<ReportListResponse> {
-  const response = await apiClient.get<ReportListResponse>('/d/reports', {
-    params: {
-      contentType: filters?.contentType,
-      status: filters?.status,
-      dateFrom: filters?.dateFrom,
-      dateTo: filters?.dateTo,
-      page: filters?.page || 1,
-      limit: filters?.limit || 10,
-    },
+  const params: Record<string, string | number | undefined> = {
+    page: filters?.page || 1,
+    limit: filters?.limit || 10,
+  };
+  
+  // Only add filters if they have values
+  if (filters?.contentType) {
+    params.content_type = filters.contentType;
+  }
+  if (filters?.status) {
+    params.status = filters.status;
+  }
+  
+  const { data: body } = await apiClient.get<ReportsApiResponse>('/d/reports', {
+    params,
   });
-  return response.data;
+  const { data = [], pagination } = body;
+  const reports = (Array.isArray(data) ? data : []).map(rawReportToReport);
+  return {
+    reports,
+    total: pagination?.total ?? 0,
+    page: pagination?.page ?? 1,
+    totalPages: pagination?.totalPages ?? 1,
+    hasNext: pagination?.hasNextPage ?? false,
+    hasPrev: pagination?.hasPrevPage ?? false,
+  };
 }
 
 /**
@@ -70,3 +140,30 @@ export async function getReports(filters?: ReportFilters): Promise<ReportListRes
 export async function dismissReport(reportId: string): Promise<void> {
   await apiClient.post(`/d/reports/${reportId}/dismiss`);
 }
+
+/**
+ * Resolves a report (marks it as resolved) with content deletion
+ * @param reportId - The ID of the report to resolve
+ * @param type - The type of content being deleted (cut, post, or user)
+ * @returns Promise that resolves when resolution is successful
+ */
+export async function resolveReport(reportId: string, type: 'cut' | 'post' | 'user'): Promise<{ message: string }> {
+  const { data } = await apiClient.post<{ status: string; message: string }>(`/d/reports/${reportId}/resolve`, {
+    type,
+    reportId,
+  });
+  return { message: data.message };
+}
+
+/**
+ * Fetches detailed report data including content details
+ * @param reportId - The ID of the report
+ * @returns Promise with the raw report data
+ */
+export async function getReportDetails(reportId: string): Promise<RawReport> {
+  const { data } = await apiClient.get<{ status: string; data: RawReport }>(`/d/reports/${reportId}`);
+  return data.data;
+}
+
+// Export RawReport type for use in components
+export type { RawReport };
