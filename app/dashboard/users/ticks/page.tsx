@@ -11,8 +11,11 @@ import {
 import { getUser } from "@/lib/auth/token";
 import { canAccessUserTicks } from "@/lib/auth/permissions";
 import { TickManagement } from "@/components/users/TickManagement";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useSidebar } from "@/app/dashboard/layout";
 
 export default function UserTicksPage() {
+  const { toggleSidebar } = useSidebar();
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
@@ -121,16 +124,11 @@ export default function UserTicksPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            User Tick Management
-          </h1>
-          <p className="text-muted-foreground">
-            Assign or remove verification ticks for users
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="User Tick Management"
+        description="Assign or remove verification ticks for users"
+        onMenuClick={toggleSidebar}
+      />
 
       {error && (
         <div className="rounded-md bg-destructive/15 p-4 text-destructive">

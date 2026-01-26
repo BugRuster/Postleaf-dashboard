@@ -4,15 +4,17 @@ import { useEffect, useState } from "react"
 import { getUser } from "@/lib/auth/token"
 import { getAdminStatus, getAdmins, type AdminStatus, type Admin } from "@/lib/api/admins"
 import { getReports, type Report } from "@/lib/api/reports"
-import { StatusCard } from "@/components/dashboard/StatusCard"
 import { StatusCharts } from "@/components/dashboard/StatusCharts"
 import { RecentReports } from "@/components/dashboard/RecentReports"
 import { ExpiringAdmins } from "@/components/dashboard/ExpiringAdmins"
 import { SuperAdminStats } from "@/components/dashboard/SuperAdminStats"
 import { AdminDashboardStats } from "@/components/dashboard/AdminDashboardStats"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { useSidebar } from "@/app/dashboard/layout"
 import type { User } from "@/lib/api/auth"
 
 export default function DashboardPage() {
+  const { toggleSidebar } = useSidebar()
   const [user, setUser] = useState<User | null>(null)
   const [adminStatus, setAdminStatus] = useState<AdminStatus | null>(null)
   const [recentReports, setRecentReports] = useState<Report[]>([])
@@ -97,12 +99,11 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          {isSuperAdmin ? 'Manage your platform' : 'Manage your content and advertisements'}
-        </p>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description={isSuperAdmin ? 'Manage your platform' : 'Manage your content and advertisements'}
+        onMenuClick={toggleSidebar}
+      />
       
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950 p-4 mb-6">

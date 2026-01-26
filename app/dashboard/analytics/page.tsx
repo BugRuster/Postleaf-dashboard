@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react"
 import { getAnalytics, type AnalyticsData } from "@/lib/api/analytics"
 import { AnalyticsOverview } from "@/components/analytics/AnalyticsOverview"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { useSidebar } from "@/app/dashboard/layout"
 
 export default function AnalyticsPage() {
+  const { toggleSidebar } = useSidebar()
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -29,7 +32,10 @@ export default function AnalyticsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Analytics</h1>
+      <PageHeader
+        title="Analytics"
+        onMenuClick={toggleSidebar}
+      />
       
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 mb-6">

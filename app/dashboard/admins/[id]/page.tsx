@@ -6,11 +6,14 @@ import { getAdminById, type Admin } from "@/lib/api/admins";
 import { getUser } from "@/lib/auth/token";
 import { canAccessAdminManagement } from "@/lib/auth/permissions";
 import { AdminDetailsForm } from "@/components/admins/AdminDetailsForm";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useSidebar } from "@/app/dashboard/layout";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 
 export default function AdminDetailsPage() {
+  const { toggleSidebar } = useSidebar();
   const router = useRouter();
   const params = useParams();
   const userId = params.id as string;
@@ -71,12 +74,15 @@ export default function AdminDetailsPage() {
   if (error || !admin) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold tracking-tight">Admin Details</h1>
-          <Link href="/dashboard/admins">
-            <Button variant="outline">Back to List</Button>
-          </Link>
-        </div>
+        <PageHeader
+          title="Admin Details"
+          onMenuClick={toggleSidebar}
+          actions={
+            <Link href="/dashboard/admins">
+              <Button variant="outline">Back to List</Button>
+            </Link>
+          }
+        />
         <div className="rounded-md bg-destructive/15 p-4 text-destructive">
           {error || "Admin not found"}
         </div>
@@ -86,17 +92,16 @@ export default function AdminDetailsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Details</h1>
-          <p className="text-muted-foreground">
-            Manage settings for @{admin.username}
-          </p>
-        </div>
-        <Link href="/dashboard/admins">
-          <Button variant="outline">Back to List</Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Admin Details"
+        description={`Manage settings for @${admin.username}`}
+        onMenuClick={toggleSidebar}
+        actions={
+          <Link href="/dashboard/admins">
+            <Button variant="outline">Back to List</Button>
+          </Link>
+        }
+      />
 
       <AdminDetailsForm admin={admin} onUpdate={handleUpdate} />
     </div>

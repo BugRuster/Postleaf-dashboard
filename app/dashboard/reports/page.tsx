@@ -11,10 +11,13 @@ import { getUser } from "@/lib/auth/token";
 import { canAccessReports } from "@/lib/auth/permissions";
 import { ReportList } from "@/components/reports/ReportList";
 import { ViewReportModal } from "@/components/reports/ViewReportModal";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useSidebar } from "@/app/dashboard/layout";
 import { Button } from "@/components/ui/button";
 import { ArrowsClockwise } from "@phosphor-icons/react";
 
 export default function ReportsPage() {
+  const { toggleSidebar } = useSidebar();
   const router = useRouter();
   const [reports, setReports] = useState<Report[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -74,18 +77,21 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-xl font-semibold">Reports</h1>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleRefresh}
-          disabled={loading}
-        >
-          <ArrowsClockwise className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
-      </div>
+      <PageHeader
+        title="Reports"
+        onMenuClick={toggleSidebar}
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={loading}
+          >
+            <ArrowsClockwise className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+        }
+      />
 
       {error && (
         <p className="text-sm text-destructive">{error}</p>

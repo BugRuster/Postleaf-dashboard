@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { useSidebar } from "@/app/dashboard/layout"
 import { getUser, removeToken } from "@/lib/auth/token"
 import { getAdminStatus } from "@/lib/api/admins"
 import type { User as AuthUser } from "@/lib/api/auth"
@@ -15,6 +17,7 @@ import type { AdminStatus } from "@/lib/types"
 import { toast } from "sonner"
 
 export function ProfileContent() {
+  const { toggleSidebar } = useSidebar()
   const router = useRouter()
   const [user, setUser] = useState<AuthUser | null>(null)
   const [adminStatus, setAdminStatus] = useState<AdminStatus | null>(null)
@@ -125,10 +128,11 @@ export function ProfileContent() {
 
   return (
     <div className="container mx-auto max-w-4xl space-y-6 p-6">
-      <div>
-        <h1 className="text-3xl font-bold">Profile</h1>
-        <p className="text-muted-foreground">Manage your account information</p>
-      </div>
+      <PageHeader
+        title="Profile"
+        description="Manage your account information"
+        onMenuClick={toggleSidebar}
+      />
 
       {/* User Information */}
       <Card>

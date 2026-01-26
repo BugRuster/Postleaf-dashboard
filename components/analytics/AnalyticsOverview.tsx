@@ -77,23 +77,38 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
   const chartConfig = {
     count: {
       label: "Count",
-      color: "hsl(var(--chart-1))",
+      theme: {
+        light: "hsl(220, 70%, 50%)",
+        dark: "hsl(220, 70%, 65%)",
+      },
     },
     views: {
       label: "Views",
-      color: "hsl(var(--chart-2))",
+      theme: {
+        light: "hsl(200, 70%, 45%)",
+        dark: "hsl(200, 70%, 60%)",
+      },
     },
     likes: {
       label: "Likes",
-      color: "hsl(var(--chart-3))",
+      theme: {
+        light: "hsl(340, 75%, 50%)",
+        dark: "hsl(340, 75%, 65%)",
+      },
     },
     comments: {
       label: "Comments",
-      color: "hsl(var(--chart-4))",
+      theme: {
+        light: "hsl(160, 60%, 45%)",
+        dark: "hsl(160, 60%, 60%)",
+      },
     },
     value: {
       label: "Value",
-      color: "hsl(var(--chart-1))",
+      theme: {
+        light: "hsl(220, 70%, 50%)",
+        dark: "hsl(220, 70%, 65%)",
+      },
     },
   }
 

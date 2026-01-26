@@ -35,35 +35,41 @@ export function StatusCharts({ data, loading = false }: StatusChartsProps) {
     {
       name: "Allocated",
       value: data.allocated_credits || 0,
-      fill: "hsl(var(--chart-1))",
+      fill: "var(--color-allocated)",
     },
     {
       name: "Available",
       value: data.available_credits || 0,
-      fill: "hsl(var(--chart-2))",
+      fill: "var(--color-available)",
     },
     {
       name: "Active Ads",
       value: data.activeAds?.total ?? 0,
-      fill: "hsl(var(--chart-3))",
+      fill: "var(--color-activeAds)",
     },
   ];
 
   const chartConfig = {
-    value: {
-      label: "Value",
-    },
     allocated: {
       label: "Allocated Credits",
-      color: "hsl(var(--chart-1))",
+      theme: {
+        light: "hsl(220, 70%, 50%)",
+        dark: "hsl(220, 70%, 65%)",
+      },
     },
     available: {
       label: "Available Credits",
-      color: "hsl(var(--chart-2))",
+      theme: {
+        light: "hsl(160, 60%, 45%)",
+        dark: "hsl(160, 60%, 60%)",
+      },
     },
     activeAds: {
       label: "Active Ads",
-      color: "hsl(var(--chart-3))",
+      theme: {
+        light: "hsl(280, 65%, 50%)",
+        dark: "hsl(280, 65%, 65%)",
+      },
     },
   };
 

@@ -4,10 +4,13 @@ import { useEffect, useState } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { getContentAnalytics, type ContentAnalyticsData } from "@/lib/api/analytics"
 import { ContentAnalytics } from "@/components/analytics/ContentAnalytics"
+import { PageHeader } from "@/components/dashboard/PageHeader"
+import { useSidebar } from "@/app/dashboard/layout"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "@phosphor-icons/react"
 
 export default function ContentAnalyticsPage() {
+  const { toggleSidebar } = useSidebar()
   const params = useParams()
   const router = useRouter()
   const contentType = params.type as 'post' | 'cut' | 'event'
@@ -44,18 +47,19 @@ export default function ContentAnalyticsPage() {
 
   return (
     <div>
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => router.back()}
-        >
-          <ArrowLeft className="h-4 w-4" weight="bold" />
-        </Button>
-        <h1 className="text-3xl font-bold">
-          {contentType.charAt(0).toUpperCase() + contentType.slice(1)} Analytics
-        </h1>
-      </div>
+      <PageHeader
+        title={`${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Analytics`}
+        onMenuClick={toggleSidebar}
+        actions={
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft className="h-4 w-4" weight="bold" />
+          </Button>
+        }
+      />
       
       {error && (
         <div className="rounded-lg border border-red-200 bg-red-50 p-4 mb-6">

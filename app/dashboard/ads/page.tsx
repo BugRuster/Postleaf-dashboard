@@ -12,8 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Plus, Megaphone } from "@phosphor-icons/react";
 import { ActiveAdsView } from "@/components/ads/ActiveAdsView";
 import { ContentSelectionDialog } from "@/components/ads/ContentSelectionDialog";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useSidebar } from "@/app/dashboard/layout";
 
 export default function AdsPage() {
+  const { toggleSidebar } = useSidebar();
   const [content, setContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -100,21 +103,17 @@ export default function AdsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Advertisement Management
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Create and manage advertisements for your content
-          </p>
-        </div>
-        <Button onClick={() => setDialogOpen(true)} disabled={loading}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Ad
-        </Button>
-      </div>
+      <PageHeader
+        title="Advertisement Management"
+        description="Create and manage advertisements for your content"
+        onMenuClick={toggleSidebar}
+        actions={
+          <Button onClick={() => setDialogOpen(true)} disabled={loading}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Ad
+          </Button>
+        }
+      />
 
       {/* Error Message */}
       {error && (

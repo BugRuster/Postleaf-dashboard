@@ -13,9 +13,12 @@ import { getUser } from "@/lib/auth/token";
 import { canAccessAdminManagement } from "@/lib/auth/permissions";
 import { AdminList } from "@/components/admins/AdminList";
 import { UserSelectionModal } from "@/components/admins/UserSelectionModal";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useSidebar } from "@/app/dashboard/layout";
 import { Button } from "@/components/ui/button";
 
 export default function AdminsPage() {
+  const { toggleSidebar } = useSidebar();
   const router = useRouter();
   const [admins, setAdmins] = useState<Admin[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,22 +87,19 @@ export default function AdminsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Admin Management
-          </h1>
-          <p className="text-muted-foreground">
-            Manage administrators and their permissions
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => fetchAdmins(currentPage)}>
-            Refresh
-          </Button>
-          <Button onClick={() => setIsModalOpen(true)}>Create Admin</Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Admin Management"
+        description="Manage administrators and their permissions"
+        onMenuClick={toggleSidebar}
+        actions={
+          <>
+            <Button variant="outline" onClick={() => fetchAdmins(currentPage)}>
+              Refresh
+            </Button>
+            <Button onClick={() => setIsModalOpen(true)}>Create Admin</Button>
+          </>
+        }
+      />
 
       {error && (
         <div className="rounded-md bg-destructive/15 p-4 text-destructive">
