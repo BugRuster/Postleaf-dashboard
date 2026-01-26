@@ -22,8 +22,12 @@ export interface ContentItem {
     image_url?: string[];
     event_images?: string[];
     media_url?: string;
+    event_date?: string;
+    location?: string;
     createdAt: string;
+    views?: number;
     is_advertisement?: boolean;
+    ad_link?: string;
   };
   createdAt: string;
 }

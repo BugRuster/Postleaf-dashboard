@@ -15,6 +15,21 @@ export interface StatusChartsProps {
 }
 
 export function StatusCharts({ data, loading = false }: StatusChartsProps) {
+  // Return loading state if no data
+  if (loading || !data) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Credits Overview</CardTitle>
+          <CardDescription>Your credit allocation and usage</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-[200px] w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
   // Prepare chart data from admin status
   const chartData = [
     {
@@ -52,40 +67,28 @@ export function StatusCharts({ data, loading = false }: StatusChartsProps) {
     },
   };
 
-  if (loading) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Status Overview</CardTitle>
-          <CardDescription>Visual representation of your admin metrics</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-[300px] w-full" />
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Status Overview</CardTitle>
-        <CardDescription>Visual representation of your admin metrics</CardDescription>
+        <CardTitle>Credits Overview</CardTitle>
+        <CardDescription>Your credit allocation and usage</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-[300px] w-full">
-          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+        <ChartContainer config={chartConfig} className="h-[200px] w-full">
+          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="name"
               tickLine={false}
               axisLine={false}
-              className="text-xs"
+              className="text-xs fill-foreground"
+              stroke="currentColor"
             />
             <YAxis
               tickLine={false}
               axisLine={false}
-              className="text-xs"
+              className="text-xs fill-foreground"
+              stroke="currentColor"
             />
             <ChartTooltip content={<ChartTooltipContent />} />
             <Bar dataKey="value" radius={[8, 8, 0, 0]} />

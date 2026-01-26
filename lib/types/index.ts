@@ -176,7 +176,7 @@ export interface NavItem {
   label: string;
   href: string;
   icon?: React.ComponentType;
-  requiredRole?: 'super_admin';
+  requiredRole?: 'super_admin' | 'admin';
 }
 
 /**

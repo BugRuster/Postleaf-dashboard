@@ -2,23 +2,36 @@
 
 import { useEffect, useState } from "react"
 import { getUser } from "@/lib/auth/token"
-import { getAdminStatus, type AdminStatus } from "@/lib/api/admins"
+import { getAdminStatus, getAdmins, type AdminStatus, type Admin } from "@/lib/api/admins"
+import { getReports, type Report } from "@/lib/api/reports"
 import { StatusCard } from "@/components/dashboard/StatusCard"
 import { StatusCharts } from "@/components/dashboard/StatusCharts"
+import { RecentReports } from "@/components/dashboard/RecentReports"
+import { ExpiringAdmins } from "@/components/dashboard/ExpiringAdmins"
+import { SuperAdminStats } from "@/components/dashboard/SuperAdminStats"
+import { AdminDashboardStats } from "@/components/dashboard/AdminDashboardStats"
 import type { User } from "@/lib/api/auth"
 
 export default function DashboardPage() {
   const [user, setUser] = useState<User | null>(null)
   const [adminStatus, setAdminStatus] = useState<AdminStatus | null>(null)
+  const [recentReports, setRecentReports] = useState<Report[]>([])
+  const [expiringAdmins, setExpiringAdmins] = useState<Admin[]>([])
+  const [stats, setStats] = useState({
+    totalAdmins: 0,
+    totalSuperAdmins: 0,
+    pendingReports: 0,
+  })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+
+  const isSuperAdmin = user?.role === 'super_admin'
 
   useEffect(() => {
     const userData = getUser()
     setUser(userData)
 
-    // Fetch admin status
-    const fetchAdminStatus = async () => {
+    const fetchDashboardData = async () => {
       if (!userData?._id) {
         setLoading(false)
         return
@@ -27,71 +40,123 @@ export default function DashboardPage() {
       try {
         setLoading(true)
         setError(null)
-        const status = await getAdminStatus(userData._id)
-        setAdminStatus(status)
+
+        if (userData.role === 'super_admin') {
+          // Fetch super admin dashboard data
+          const [reportsData, adminsData] = await Promise.all([
+            getReports({ status: 'pending', limit: 5 }),
+            getAdmins({ page: 1, limit: 100 }),
+          ])
+
+          setRecentReports(reportsData.reports)
+          
+          // Split admins by role
+          const regularAdmins = adminsData.data.filter(admin => admin.role === 'admin')
+          const superAdmins = adminsData.data.filter(admin => admin.role === 'super_admin')
+          
+          // Filter admins expiring in next 30 days (only regular admins)
+          const now = new Date()
+          const thirtyDaysFromNow = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
+          
+          const expiring = regularAdmins
+            .filter((admin) => {
+              if (!admin.adminExpiryTime) return false
+              const expiryDate = new Date(admin.adminExpiryTime)
+              return expiryDate <= thirtyDaysFromNow && expiryDate > now
+            })
+            .sort((a, b) => {
+              const dateA = a.adminExpiryTime ? new Date(a.adminExpiryTime).getTime() : 0
+              const dateB = b.adminExpiryTime ? new Date(b.adminExpiryTime).getTime() : 0
+              return dateA - dateB
+            })
+            .slice(0, 5)
+
+          setExpiringAdmins(expiring)
+
+          // Calculate stats
+          setStats({
+            totalAdmins: regularAdmins.length,
+            totalSuperAdmins: superAdmins.length,
+            pendingReports: reportsData.total,
+          })
+        } else {
+          // Fetch regular admin dashboard data
+          const status = await getAdminStatus(userData._id)
+          setAdminStatus(status)
+        }
       } catch (err) {
-        console.error('Failed to fetch admin status:', err)
-        setError('Failed to load admin status. Please try again.')
+        console.error('Failed to fetch dashboard data:', err)
+        setError('Failed to load dashboard data. Please try again.')
       } finally {
         setLoading(false)
       }
     }
 
-    fetchAdminStatus()
+    fetchDashboardData()
   }, [])
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">Dashboard Home</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <p className="text-muted-foreground mt-1">
+          {isSuperAdmin ? 'Manage your platform' : 'Manage your content and advertisements'}
+        </p>
+      </div>
       
+      {error && (
+        <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950 p-4 mb-6">
+          <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+        </div>
+      )}
+
       {user && (
         <div className="space-y-6">
+          {/* Welcome Card */}
           <div className="rounded-lg border bg-card p-6">
-            <h2 className="text-xl font-semibold mb-4">Welcome back!</h2>
-            <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium">Email:</span> {user.email}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                <span className="font-medium">Username:</span> {user.username}
-              </p>
+            <h2 className="text-xl font-semibold mb-4">
+              Welcome back, {user.username}!
+            </h2>
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-2xl font-bold text-primary">
+                  {user.username.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Email:</span> {user.email}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-medium">Role:</span>{' '}
+                  <span className="capitalize">{user.role.replace('_', ' ')}</span>
+                </p>
+              </div>
             </div>
           </div>
 
-          {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-              <p className="text-sm text-red-800">{error}</p>
-            </div>
-          )}
+          {/* Super Admin Dashboard */}
+          {isSuperAdmin ? (
+            <>
+              <SuperAdminStats
+                totalAdmins={stats.totalAdmins}
+                totalSuperAdmins={stats.totalSuperAdmins}
+                pendingReports={stats.pendingReports}
+                loading={loading}
+              />
 
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Admin Status</h2>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <StatusCard
-                title="Role"
-                value={adminStatus?.role || '-'}
-                loading={loading}
-              />
-              <StatusCard
-                title="Available Credits"
-                value={adminStatus?.available_credits || 0}
-                loading={loading}
-              />
-              <StatusCard
-                title="Validity"
-                value={adminStatus?.adminValidity ? `${adminStatus.adminValidity} days` : '-'}
-                loading={loading}
-              />
-              <StatusCard
-                title="Active Ads"
-                value={adminStatus?.activeAds?.total ?? 0}
-                loading={loading}
-              />
-            </div>
-          </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                <RecentReports reports={recentReports} loading={loading} />
+                <ExpiringAdmins admins={expiringAdmins} loading={loading} />
+              </div>
+            </>
+          ) : (
+            /* Regular Admin Dashboard */
+            <>
+              <AdminDashboardStats adminStatus={adminStatus} loading={loading} />
 
-          {adminStatus && (
-            <StatusCharts data={adminStatus} loading={loading} />
+              {adminStatus && <StatusCharts data={adminStatus} loading={loading} />}
+            </>
           )}
         </div>
       )}

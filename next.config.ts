@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
         hostname: '*.s3.ap-south-1.amazonaws.com',
       },
     ],
+    unoptimized: true, // Allow all external images without optimization
   },
 };
 

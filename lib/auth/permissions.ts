@@ -41,22 +41,22 @@ export function canAccessReports(role: UserRole): boolean {
 
 /**
  * Checks if a user can access advertisement management
- * Both admins and super_admins can manage advertisements
+ * Only regular admins can manage advertisements (not super_admins)
  * @param role - The user's role
  * @returns True if the user can access advertisement management, false otherwise
  */
 export function canAccessAdvertisements(role: UserRole): boolean {
-  return role === 'admin' || role === 'super_admin';
+  return role === 'admin';
 }
 
 /**
  * Checks if a user can access analytics
- * Both admins and super_admins can view analytics
+ * Only regular admins can view analytics (not super_admins)
  * @param role - The user's role
  * @returns True if the user can access analytics, false otherwise
  */
 export function canAccessAnalytics(role: UserRole): boolean {
-  return role === 'admin' || role === 'super_admin';
+  return role === 'admin';
 }
 
 /**

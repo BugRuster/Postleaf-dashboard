@@ -23,6 +23,9 @@ export interface TimelineDataPoint {
 export interface ContentTypeAnalytics {
   count: number;
   views: number;
+  likes: number;
+  comments: number;
+  registrations?: number;
 }
 
 /**
@@ -33,6 +36,24 @@ export interface TopContentItem {
   type: 'post' | 'cut' | 'event';
   title: string;
   views: number;
+  imageUrl?: string;
+  mediaUrl?: string;
+  isAd: boolean;
+}
+
+/**
+ * Active ad item
+ */
+export interface ActiveAdItem {
+  id: string;
+  type: 'post' | 'cut' | 'event';
+  title: string;
+  views: number;
+  likes: number;
+  comments: number;
+  imageUrl?: string;
+  mediaUrl?: string;
+  createdAt: string;
 }
 
 /**
@@ -40,10 +61,14 @@ export interface TopContentItem {
  */
 export interface AnalyticsData {
   totalViews: number;
+  totalLikes: number;
+  totalComments: number;
+  engagementRate: number;
   posts: ContentTypeAnalytics;
   cuts: ContentTypeAnalytics;
   events: ContentTypeAnalytics;
   topContent: TopContentItem[];
+  activeAds: ActiveAdItem[];
 }
 
 /**
@@ -52,10 +77,14 @@ export interface AnalyticsData {
 export interface ContentAnalyticsData {
   id: string;
   type: 'post' | 'cut' | 'event';
+  title: string;
   views: number;
   likes: number;
   comments: number;
   isAd: boolean;
+  imageUrl?: string;
+  mediaUrl?: string;
+  registrations?: number;
   createdAt: string;
 }
 

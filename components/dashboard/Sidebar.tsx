@@ -32,7 +32,7 @@ interface NavItem {
   label: string
   href: string
   icon: PhosphorIcon
-  requiredRole?: 'super_admin'
+  requiredRole?: 'super_admin' | 'admin'
 }
 
 const navItems: NavItem[] = [
@@ -48,16 +48,6 @@ const navItems: NavItem[] = [
     requiredRole: 'super_admin',
   },
   {
-    label: "Advertisements",
-    href: "/dashboard/ads",
-    icon: Megaphone,
-  },
-  {
-    label: "Analytics",
-    href: "/dashboard/analytics",
-    icon: ChartBar,
-  },
-  {
     label: "Admin Management",
     href: "/dashboard/admins",
     icon: Users,
@@ -68,6 +58,18 @@ const navItems: NavItem[] = [
     href: "/dashboard/users/ticks",
     icon: CheckCircle,
     requiredRole: 'super_admin',
+  },
+  {
+    label: "Advertisements",
+    href: "/dashboard/ads",
+    icon: Megaphone,
+    requiredRole: 'admin',
+  },
+  {
+    label: "Analytics",
+    href: "/dashboard/analytics",
+    icon: ChartBar,
+    requiredRole: 'admin',
   },
 ]
 
@@ -81,11 +83,7 @@ export function Sidebar({ userRole }: SidebarProps) {
       return true
     }
     
-    if (item.requiredRole === 'super_admin') {
-      return canAccessAdminManagement(userRole) || canAccessUserTicks(userRole)
-    }
-    
-    return true
+    return item.requiredRole === userRole
   })
 
   const toggleTheme = () => {
