@@ -47,6 +47,18 @@ export default function LoginPage() {
         setIsLoading(false)
         return
       }
+
+      // Check if admin status is expired
+      if (response.data.user.adminExpiryTime) {
+        const expiryTime = new Date(response.data.user.adminExpiryTime)
+        const currentTime = new Date()
+        
+        if (currentTime >= expiryTime) {
+          setErrorMessage("Your admin access has expired. Please contact a super admin.")
+          setIsLoading(false)
+          return
+        }
+      }
       
       // Extract token and user data from the nested response structure
       const authToken = response.data.token
@@ -61,14 +73,31 @@ export default function LoginPage() {
     } catch (error: unknown) {
       // Handle different error types
       if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { response?: { status: number } }
-        const status = axiosError.response?.status
-        if (status === 401 || status === 400) {
-          setErrorMessage("Invalid username/email or password. Please try again.")
-        } else if (status === 403) {
-          setErrorMessage("Access denied. You don't have permission to log in.")
+        const axiosError = error as { 
+          response?: { 
+            status: number
+            data?: {
+              message?: string
+              error?: string
+            }
+          } 
+        }
+        
+        // Try to get the error message from the backend response
+        const backendMessage = axiosError.response?.data?.message || axiosError.response?.data?.error
+        
+        if (backendMessage) {
+          setErrorMessage(backendMessage)
         } else {
-          setErrorMessage("An error occurred. Please try again later.")
+          // Fallback to generic messages if no backend message
+          const status = axiosError.response?.status
+          if (status === 401 || status === 400) {
+            setErrorMessage("Invalid username/email or password. Please try again.")
+          } else if (status === 403) {
+            setErrorMessage("Access denied. You don't have permission to log in.")
+          } else {
+            setErrorMessage("An error occurred. Please try again later.")
+          }
         }
       } else if (error && typeof error === 'object' && 'request' in error) {
         setErrorMessage("Unable to connect to server. Please check your internet connection.")

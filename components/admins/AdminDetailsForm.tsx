@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -50,26 +50,47 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
   const [pendingValidityData, setPendingValidityData] = useState<number | null>(null);
   const [pendingCreditsData, setPendingCreditsData] = useState<number | null>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   // Validity state
   const [validityMode, setValidityMode] = useState<'15' | '30' | 'custom'>('15');
   const [customValidity, setCustomValidity] = useState<string>('');
 
+  // Update current time every second for live countdown
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   // Calculate remaining validity time
   const calculateRemainingTime = () => {
     if (!admin.adminExpiryTime) return null;
 
-    const now = new Date();
     const expiryDate = new Date(admin.adminExpiryTime);
-    const diffMs = expiryDate.getTime() - now.getTime();
+    console.log('Admin Expiry Time:', expiryDate.toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short'
+    }));
+    
+    const diffMs = expiryDate.getTime() - currentTime.getTime();
 
-    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, expired: true };
+    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
 
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
-    return { days, hours, minutes, expired: false };
+    return { days, hours, minutes, seconds, expired: false };
   };
 
   const remainingTime = calculateRemainingTime();
@@ -90,9 +111,9 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
     let days: number;
     
     if (validityMode === 'custom') {
-      days = parseInt(customValidity);
-      if (isNaN(days) || days < 1) {
-        setErrorMessage('Please enter a valid number of days');
+      days = parseFloat(customValidity);
+      if (isNaN(days) || days <= 0) {
+        setErrorMessage('Please enter a valid positive number');
         return;
       }
     } else {
@@ -260,18 +281,22 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
                   {remainingTime.expired ? (
                     <p className="text-sm text-destructive">Account has expired</p>
                   ) : (
-                    <div className="flex gap-2">
-                      <div className="flex-1 flex flex-col items-center px-3 py-3 bg-background rounded-lg border">
+                    <div className="grid grid-cols-4 gap-2">
+                      <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
                         <span className="text-2xl font-bold">{remainingTime.days}</span>
                         <span className="text-xs text-muted-foreground mt-1">days</span>
                       </div>
-                      <div className="flex-1 flex flex-col items-center px-3 py-3 bg-background rounded-lg border">
+                      <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
                         <span className="text-2xl font-bold">{remainingTime.hours}</span>
                         <span className="text-xs text-muted-foreground mt-1">hours</span>
                       </div>
-                      <div className="flex-1 flex flex-col items-center px-3 py-3 bg-background rounded-lg border">
+                      <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
                         <span className="text-2xl font-bold">{remainingTime.minutes}</span>
                         <span className="text-xs text-muted-foreground mt-1">mins</span>
+                      </div>
+                      <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
+                        <span className="text-2xl font-bold">{remainingTime.seconds}</span>
+                        <span className="text-xs text-muted-foreground mt-1">secs</span>
                       </div>
                     </div>
                   )}
@@ -306,8 +331,9 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
                 <TabsContent value="custom" className="mt-3">
                   <Input
                     type="number"
-                    min="1"
-                    placeholder="Enter number of days"
+                    min="0"
+                    step="any"
+                    placeholder="Enter number of days (e.g., 0.001, 1.5, 7)"
                     value={customValidity}
                     onChange={(e) => setCustomValidity(e.target.value)}
                   />

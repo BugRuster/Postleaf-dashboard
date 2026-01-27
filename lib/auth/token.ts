@@ -79,3 +79,33 @@ export function getUser(): User | null {
     return null;
   }
 }
+
+/**
+ * Checks if the admin status has expired
+ * @returns True if admin status is expired, false otherwise
+ */
+export function isAdminExpired(): boolean {
+  const user = getUser();
+  
+  if (!user || !user.adminExpiryTime) {
+    return false;
+  }
+  
+  const expiryTime = new Date(user.adminExpiryTime);
+  const currentTime = new Date();
+  
+  return currentTime >= expiryTime;
+}
+
+/**
+ * Logs out the user by removing token and user data
+ * Redirects to login page if redirect parameter is true
+ * @param redirect - Whether to redirect to login page (default: false)
+ */
+export function logout(redirect: boolean = false): void {
+  removeToken();
+  
+  if (redirect && typeof window !== 'undefined') {
+    window.location.href = '/login';
+  }
+}

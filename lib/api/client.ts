@@ -54,7 +54,8 @@ apiClient.interceptors.response.use(
     // Handle 401 errors specially - clear token and redirect
     if (error.response?.status === 401) {
       removeToken();
-      if (typeof window !== 'undefined') {
+      // Only redirect if not already on the login page
+      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
     }

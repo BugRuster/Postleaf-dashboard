@@ -32,12 +32,10 @@ export default function AdminDetailsPage() {
 
   // Fetch admin details
   const fetchAdmin = async () => {
-    console.log("calling, fetch admin");
     setLoading(true);
     setError(null);
     try {
       const adminData = await getAdminById(userId);
-      console.log("fetched admin, ", adminData);
       setAdmin(adminData);
     } catch (err) {
       console.error("Failed to fetch admin details:", err);
@@ -59,7 +57,6 @@ export default function AdminDetailsPage() {
     fetchAdmin();
   };
 
-  console.log("admin, ", admin);
 
   if (loading) {
     return (

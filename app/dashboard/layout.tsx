@@ -3,7 +3,7 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/Sidebar";
-import { getUser, isAuthenticated } from "@/lib/auth/token";
+import { getUser, isAuthenticated, isAdminExpired, logout } from "@/lib/auth/token";
 import { ErrorBoundary } from "@/components/error-boundary";
 
 // Create context for sidebar toggle
@@ -61,6 +61,24 @@ export default function DashboardLayout({
       router.push("/login");
       return;
     }
+
+    // Check if admin status is expired on mount
+    if (isAdminExpired()) {
+      logout(true);
+      return;
+    }
+
+    // Set up interval to check admin expiry every 30 seconds
+    const checkExpiryInterval = setInterval(() => {
+      if (isAdminExpired()) {
+        logout(true);
+      }
+    }, 30000); // Check every 30 seconds
+
+    // Cleanup interval on unmount
+    return () => {
+      clearInterval(checkExpiryInterval);
+    };
   }, [router]);
 
   // Show loading state while checking authentication
