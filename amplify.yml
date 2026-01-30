@@ -1,0 +1,22 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        # Install pnpm
+        - npm install -g pnpm
+        # Install dependencies using pnpm
+        - pnpm install --frozen-lockfile
+    build:
+      commands:
+        # Build the Next.js application with Turbopack
+        - pnpm build
+  artifacts:
+    baseDirectory: .next
+    files:
+      - "**/*"
+  cache:
+    paths:
+      - node_modules/**/*
+      - .next/cache/**/*
+      - ~/.pnpm-store/**/*
