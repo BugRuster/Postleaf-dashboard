@@ -22,32 +22,8 @@ export default function DashboardLayout({
 }) {
   const router = useRouter();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  
-  // Compute initial auth state
-  const [authState, setAuthState] = useState<{
-    isLoading: boolean;
-    userRole: "admin" | "super_admin";
-  }>(() => {
-    // Initialize state based on current auth status
-    if (typeof window === 'undefined') {
-      return { isLoading: true, userRole: "admin" };
-    }
-    
-    if (!isAuthenticated()) {
-      return { isLoading: false, userRole: "admin" };
-    }
-
-    const currentUser = getUser();
-    if (!currentUser || !currentUser.role) {
-      return { isLoading: false, userRole: "admin" };
-    }
-
-    const role = currentUser.role === "user" ? "admin" : currentUser.role;
-    return { 
-      isLoading: false, 
-      userRole: role as "admin" | "super_admin" 
-    };
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<"admin" | "super_admin">("admin");
 
   useEffect(() => {
     // Check authentication and redirect if needed (client-side only)
@@ -61,6 +37,11 @@ export default function DashboardLayout({
       router.push("/login");
       return;
     }
+
+    // Set user role
+    const role = currentUser.role === "user" ? "admin" : currentUser.role;
+    setUserRole(role as "admin" | "super_admin");
+    setIsLoading(false);
 
     // Check if admin status is expired on mount
     if (isAdminExpired()) {
@@ -82,7 +63,7 @@ export default function DashboardLayout({
   }, [router]);
 
   // Show loading state while checking authentication
-  if (authState.isLoading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
@@ -97,7 +78,7 @@ export default function DashboardLayout({
     <SidebarContext.Provider value={{ toggleSidebar: () => setIsMobileSidebarOpen(true) }}>
       <div className="flex h-screen overflow-hidden">
         <Sidebar 
-          userRole={authState.userRole} 
+          userRole={userRole} 
           isMobileOpen={isMobileSidebarOpen}
           onMobileClose={() => setIsMobileSidebarOpen(false)}
         />

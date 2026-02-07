@@ -213,7 +213,7 @@ export function ContentSelectionDialog({
                   ? 'border-primary ring-2 ring-primary/20'
                   : 'hover:border-primary/50'
               }`}
-              onClick={() => setSelectedContent(item)}
+              onClick={() => setSelectedContent(selectedContent?._id === item._id ? null : item)}
             >
               <CardContent className="p-4">
                 <div className="flex gap-4">
@@ -329,10 +329,24 @@ export function ContentSelectionDialog({
             <div className="p-4 bg-muted rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium">Selected Content:</span>
-                <Badge variant="outline" className={getContentTypeBadge(selectedContent.contentType)}>
-                  {getContentTypeIcon(selectedContent.contentType)}
-                  <span className="ml-1 capitalize">{selectedContent.contentType}</span>
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className={getContentTypeBadge(selectedContent.contentType)}>
+                    {getContentTypeIcon(selectedContent.contentType)}
+                    <span className="ml-1 capitalize">{selectedContent.contentType}</span>
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedContent(null);
+                      setAdLink("");
+                      setError(null);
+                    }}
+                    className="h-6 px-2 text-xs"
+                  >
+                    Clear
+                  </Button>
+                </div>
               </div>
               <div className="flex gap-3">
                 <div className="w-20 flex-shrink-0">

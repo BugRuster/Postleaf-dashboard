@@ -31,19 +31,21 @@ export function CreateAdModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Ad link is optional for events, required for posts and cuts
   const requiresAdLink = content?.contentType === "post" || content?.contentType === "cut";
+  const showAdLinkField = true; // Always show the field for all content types
 
   const handleConfirm = async () => {
     setError(null);
 
-    // Validate ad link for post and cut types
+    // Validate ad link for post and cut types (required)
     if (requiresAdLink && !adLink.trim()) {
-      setError("Ad link is required for this content type");
+      setError("Ad link is required for posts and cuts");
       return;
     }
 
-    // Basic URL validation
-    if (requiresAdLink && adLink.trim()) {
+    // Basic URL validation if ad link is provided
+    if (adLink.trim()) {
       try {
         new URL(adLink);
       } catch {
@@ -54,7 +56,8 @@ export function CreateAdModal({
 
     setLoading(true);
     try {
-      await onConfirm(requiresAdLink ? adLink : undefined);
+      // Send ad link if provided, regardless of content type
+      await onConfirm(adLink.trim() ? adLink : undefined);
       setAdLink("");
       onOpenChange(false);
     } catch (error: any) {
@@ -81,8 +84,8 @@ export function CreateAdModal({
           <DialogTitle>Create Advertisement</DialogTitle>
           <DialogDescription>
             {requiresAdLink
-              ? "Enter the ad link for this content to create an advertisement."
-              : "Confirm to create an advertisement for this event."}
+              ? "Enter the ad link for this content. This field is required for posts and cuts."
+              : "Enter an optional ad link for this content, or leave blank to create without a link."}
           </DialogDescription>
         </DialogHeader>
 
@@ -101,10 +104,10 @@ export function CreateAdModal({
               </div>
             </div>
 
-            {requiresAdLink && (
+            {showAdLinkField && (
               <div className="space-y-2">
                 <Label htmlFor="adLink">
-                  Ad Link <span className="text-destructive">*</span>
+                  Ad Link {requiresAdLink && <span className="text-destructive">*</span>}
                 </Label>
                 <Input
                   id="adLink"
@@ -115,7 +118,9 @@ export function CreateAdModal({
                   disabled={loading}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Enter the URL where users will be directed when they click on this ad
+                  {requiresAdLink 
+                    ? "Required: Enter the URL where users will be directed when they click on this ad"
+                    : "Optional: Enter the URL where users will be directed when they click on this ad"}
                 </p>
               </div>
             )}
