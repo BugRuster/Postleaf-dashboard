@@ -51,7 +51,11 @@ export function ContentSelectionDialog({
     return eventDate > now; // Only include future events
   });
 
-  const requiresAdLink = selectedContent?.contentType === 'post' || selectedContent?.contentType === 'cut';
+  // Normalize contentType for API variance between local/production (e.g. 'post' vs 'Post')
+  const contentType = selectedContent?.contentType?.toLowerCase?.();
+  const requiresAdLink = contentType === 'post' || contentType === 'cut';
+  // Always show Ad Link field when content is selected
+  const showAdLinkField = !!selectedContent;
 
   const handleCreateAd = async () => {
     if (!selectedContent) return;
@@ -287,7 +291,7 @@ export function ContentSelectionDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto flex flex-col">
         <DialogHeader>
           <DialogTitle>Create Advertisement</DialogTitle>
           <DialogDescription>
@@ -325,7 +329,7 @@ export function ContentSelectionDialog({
         </Tabs>
 
         {selectedContent && (
-          <div className="space-y-4 pt-4 border-t">
+          <div className="space-y-4 pt-4 border-t flex-shrink-0">
             <div className="p-4 bg-muted rounded-lg">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-medium">Selected Content:</span>
@@ -360,10 +364,10 @@ export function ContentSelectionDialog({
               </div>
             </div>
 
-            {requiresAdLink && (
+            {showAdLinkField && (
               <div className="space-y-2">
                 <Label htmlFor="adLink">
-                  Ad Link <span className="text-destructive">*</span>
+                  Ad Link {requiresAdLink && <span className="text-destructive">*</span>}
                 </Label>
                 <Input
                   id="adLink"
@@ -374,16 +378,15 @@ export function ContentSelectionDialog({
                   disabled={creating}
                 />
                 <p className="text-xs text-muted-foreground">
-                  Enter the URL where users will be directed when they click on this ad
+                  {requiresAdLink
+                    ? "Enter the URL where users will be directed when they click on this ad"
+                    : "Optional: Enter the URL where users will be directed when they click on this ad"}
                 </p>
-              </div>
-            )}
-
-            {!requiresAdLink && (
-              <div className="p-3 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-sm text-blue-800 dark:text-blue-200">
-                  ℹ️ Ad link is not required for events
-                </p>
+                {!requiresAdLink && (
+                  <p className="text-sm text-blue-800 dark:text-blue-200">
+                    ℹ️ Ad link is not required for events
+                  </p>
+                )}
               </div>
             )}
 
