@@ -14,7 +14,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Eye, Link as LinkIcon, Trash, PencilSimple, Image as ImageIcon, Video, CalendarBlank } from "@phosphor-icons/react";
+import { IoCalendarOutline } from "react-icons/io5";
+import { Eye, Link as LinkIcon, Trash, PencilSimple, Image as ImageIcon, Video } from "@phosphor-icons/react";
+import { CutsIcon } from "@/components/icons/cuts-icon";
 import type { ContentItem } from "@/lib/api/ads";
 import Image from "next/image";
 
@@ -198,7 +200,7 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
                   )}
                   {ad.contentType === 'event' && content.event_date && (
                     <div className="flex items-center gap-1">
-                      <CalendarBlank className="h-4 w-4" />
+                      <IoCalendarOutline className="h-4 w-4" />
                       <span>{new Date(content.event_date).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric'

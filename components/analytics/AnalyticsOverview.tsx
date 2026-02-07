@@ -6,7 +6,10 @@ import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Eye, Heart, ChatCircle, TrendUp, FileText, Scissors, CalendarBlank } from "@phosphor-icons/react"
+import { GoHome } from "react-icons/go"
+import { IoCalendarOutline } from "react-icons/io5"
+import { Eye, Heart, ChatCircle, TrendUp } from "@phosphor-icons/react"
+import { CutsIcon } from "@/components/icons/cuts-icon"
 import type { AnalyticsData } from "@/lib/api/analytics"
 import Link from "next/link"
 import Image from "next/image"
@@ -113,13 +116,14 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
   }
 
   const getContentIcon = (type: string) => {
-    switch (type) {
+    const normalized = type?.toLowerCase?.()
+    switch (normalized) {
       case 'post':
-        return <FileText className="h-4 w-4" weight="fill" />
+        return <GoHome className="h-4 w-4" />
       case 'cut':
-        return <Scissors className="h-4 w-4" weight="fill" />
+        return <CutsIcon className="h-4 w-4" filled />
       case 'event':
-        return <CalendarBlank className="h-4 w-4" weight="fill" />
+        return <IoCalendarOutline className="h-4 w-4" />
       default:
         return null
     }
@@ -249,7 +253,7 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Posts</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" weight="fill" />
+            <GoHome className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.posts.count}</div>
@@ -273,7 +277,7 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Cuts</CardTitle>
-            <Scissors className="h-4 w-4 text-muted-foreground" weight="fill" />
+            <CutsIcon className="h-4 w-4 text-muted-foreground" filled />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.cuts.count}</div>
@@ -297,7 +301,7 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Events</CardTitle>
-            <CalendarBlank className="h-4 w-4 text-muted-foreground" weight="fill" />
+            <IoCalendarOutline className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.events.count}</div>

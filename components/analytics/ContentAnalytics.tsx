@@ -3,7 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
-import { Eye, Heart, ChatCircle, CalendarBlank, Users } from "@phosphor-icons/react"
+import { IoCalendarOutline } from "react-icons/io5"
+import { Eye, Heart, ChatCircle, Users } from "@phosphor-icons/react"
 import type { ContentAnalyticsData } from "@/lib/api/analytics"
 import Image from "next/image"
 
@@ -105,7 +106,7 @@ export function ContentAnalytics({ data, loading }: ContentAnalyticsProps) {
           {/* Metadata */}
           <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
             <div className="flex items-center gap-2">
-              <CalendarBlank className="h-4 w-4" weight="fill" />
+              <IoCalendarOutline className="h-4 w-4" />
               <span>Created: {formatDate(data.createdAt)}</span>
             </div>
             <div className="flex items-center gap-2">

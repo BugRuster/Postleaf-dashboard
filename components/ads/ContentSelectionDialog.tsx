@@ -14,7 +14,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, Scissors, CalendarBlank, Eye, Image as ImageIcon, Video } from "@phosphor-icons/react";
+import { GoHome } from "react-icons/go";
+import { IoCalendarOutline } from "react-icons/io5";
+import { Eye, Image as ImageIcon, Video } from "@phosphor-icons/react";
+import { CutsIcon } from "@/components/icons/cuts-icon";
 import type { ContentItem } from "@/lib/api/ads";
 import Image from "next/image";
 
@@ -121,7 +124,7 @@ export function ContentSelectionDialog({
       }
       return (
         <div className="w-full h-32 bg-muted rounded-md flex items-center justify-center">
-          <FileText className="h-8 w-8 text-muted-foreground" />
+          <GoHome className="h-8 w-8 text-muted-foreground" />
         </div>
       );
     }
@@ -143,7 +146,7 @@ export function ContentSelectionDialog({
       }
       return (
         <div className="w-full h-32 bg-muted rounded-md flex items-center justify-center">
-          <Scissors className="h-8 w-8 text-muted-foreground" />
+          <CutsIcon className="h-8 w-8 text-muted-foreground" filled />
         </div>
       );
     }
@@ -164,7 +167,7 @@ export function ContentSelectionDialog({
       }
       return (
         <div className="w-full h-32 bg-muted rounded-md flex items-center justify-center">
-          <CalendarBlank className="h-8 w-8 text-muted-foreground" />
+          <IoCalendarOutline className="h-8 w-8 text-muted-foreground" />
         </div>
       );
     }
@@ -173,25 +176,27 @@ export function ContentSelectionDialog({
   };
 
   const getContentTypeIcon = (type: string) => {
-    switch (type) {
+    const normalized = type?.toLowerCase?.();
+    switch (normalized) {
       case 'post':
-        return <FileText className="h-4 w-4" weight="fill" />;
+        return <GoHome className="h-4 w-4" />;
       case 'cut':
-        return <Scissors className="h-4 w-4" weight="fill" />;
+        return <CutsIcon className="h-4 w-4" filled />;
       case 'event':
-        return <CalendarBlank className="h-4 w-4" weight="fill" />;
+        return <IoCalendarOutline className="h-4 w-4" />;
       default:
         return null;
     }
   };
 
   const getContentTypeBadge = (type: string) => {
+    const normalized = type?.toLowerCase?.();
     const colors = {
       post: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
       cut: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
       event: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
     };
-    return colors[type as keyof typeof colors] || '';
+    return colors[normalized as keyof typeof colors] || '';
   };
 
   const renderContentList = (items: ContentItem[]) => {
@@ -269,7 +274,7 @@ export function ContentSelectionDialog({
                         <>
                           <span>•</span>
                           <div className="flex items-center gap-1">
-                            <CalendarBlank className="h-3 w-3" />
+                            <IoCalendarOutline className="h-3 w-3" />
                             <span>{new Date(content.event_date).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -302,15 +307,15 @@ export function ContentSelectionDialog({
         <Tabs defaultValue="posts" className="flex-1 overflow-hidden flex flex-col">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="posts">
-              <FileText className="h-4 w-4 mr-2" />
+              <GoHome className="h-4 w-4 mr-2" />
               Posts ({posts.length})
             </TabsTrigger>
             <TabsTrigger value="cuts">
-              <Scissors className="h-4 w-4 mr-2" />
+              <CutsIcon className="h-4 w-4 mr-2" filled />
               Cuts ({cuts.length})
             </TabsTrigger>
             <TabsTrigger value="events">
-              <CalendarBlank className="h-4 w-4 mr-2" />
+              <IoCalendarOutline className="h-4 w-4 mr-2" />
               Events ({events.length})
             </TabsTrigger>
           </TabsList>
