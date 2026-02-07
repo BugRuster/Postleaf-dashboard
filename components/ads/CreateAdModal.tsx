@@ -106,7 +106,7 @@ export function CreateAdModal({
 
             {showAdLinkField && (
               <div className="space-y-2">
-                <Label htmlFor="adLink">
+                <Label htmlFor="adLink" className="block">
                   Ad Link {requiresAdLink && <span className="text-destructive">*</span>}
                 </Label>
                 <Input
@@ -116,6 +116,7 @@ export function CreateAdModal({
                   value={adLink}
                   onChange={(e) => setAdLink(e.target.value)}
                   disabled={loading}
+                  className="bg-background text-foreground border-input min-h-[40px] w-full"
                 />
                 <p className="text-xs text-muted-foreground">
                   {requiresAdLink 
