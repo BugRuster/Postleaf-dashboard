@@ -84,7 +84,7 @@ interface RawReport {
     email?: string;
     profile_picture?: string;
   };
-  comment_id?: { _id: string; text?: string; body?: string } | null;
+  comment_id?: { _id: string; comment_text?: string; text?: string; body?: string } | null;
   reason: string;
   status: "pending" | "dismissed" | "resolved";
   createdAt: string;
