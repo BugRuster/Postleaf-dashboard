@@ -25,7 +25,11 @@ export default function AdminDetailsPage() {
   // Check permissions
   useEffect(() => {
     const user = getUser();
-    if (!user || user.role === "user" || !canAccessAdminManagement(user.role as "admin" | "super_admin")) {
+    if (
+      !user ||
+      user.role === "user" ||
+      !canAccessAdminManagement(user.role as "admin" | "super_admin")
+    ) {
       router.push("/dashboard");
     }
   }, [router]);
@@ -56,7 +60,6 @@ export default function AdminDetailsPage() {
     // Refresh admin data after update
     fetchAdmin();
   };
-
 
   if (loading) {
     return (

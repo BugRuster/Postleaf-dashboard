@@ -32,7 +32,11 @@ export default function UserTicksPage() {
   // Check permissions
   useEffect(() => {
     const user = getUser();
-    if (!user || user.role === "user" || !canAccessUserTicks(user.role as "admin" | "super_admin")) {
+    if (
+      !user ||
+      user.role === "user" ||
+      !canAccessUserTicks(user.role as "admin" | "super_admin")
+    ) {
       router.push("/dashboard");
     }
   }, [router]);
@@ -77,12 +81,16 @@ export default function UserTicksPage() {
     [],
   );
 
-  const handleUpdateTick = async (userId: string, tick: 'blue' | 'golden' | null) => {
+  const handleUpdateTick = async (
+    userId: string,
+    tick: "blue" | "golden" | null,
+  ) => {
     setError(null);
     setSuccessMessage(null);
 
-    const currentUser = users.find((u) => u._id === userId)
-      ?? tickedUsers.find((u) => u._id === userId);
+    const currentUser =
+      users.find((u) => u._id === userId) ??
+      tickedUsers.find((u) => u._id === userId);
 
     try {
       const blueTick = tick === "blue";
@@ -95,9 +103,13 @@ export default function UserTicksPage() {
       setUsers((prev) =>
         prev.map((u) =>
           u._id === userId
-            ? { ...u, blueTick: updatedUser.blueTick, goldenTick: updatedUser.goldenTick }
-            : u
-        )
+            ? {
+                ...u,
+                blueTick: updatedUser.blueTick,
+                goldenTick: updatedUser.goldenTick,
+              }
+            : u,
+        ),
       );
 
       if (tick === null) {
@@ -106,14 +118,18 @@ export default function UserTicksPage() {
         setTickedUsers((prev) =>
           prev.map((u) =>
             u._id === userId
-              ? { ...u, blueTick: updatedUser.blueTick, goldenTick: updatedUser.goldenTick }
-              : u
-          )
+              ? {
+                  ...u,
+                  blueTick: updatedUser.blueTick,
+                  goldenTick: updatedUser.goldenTick,
+                }
+              : u,
+          ),
         );
       }
 
       setSuccessMessage(
-        `Successfully updated tick for ${currentUser?.username ?? "user"}`
+        `Successfully updated tick for ${currentUser?.username ?? "user"}`,
       );
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {

@@ -3,18 +3,21 @@
  * Quick stats cards for regular admin dashboard
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Megaphone, Coins, Clock, ChartBar } from "@phosphor-icons/react"
-import Link from "next/link"
-import type { AdminStatus } from "@/lib/api/admins"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Megaphone, Coins, Clock, ChartBar } from "@phosphor-icons/react";
+import Link from "next/link";
+import type { AdminStatus } from "@/lib/api/admins";
 
 interface AdminDashboardStatsProps {
-  adminStatus: AdminStatus | null
-  loading?: boolean
+  adminStatus: AdminStatus | null;
+  loading?: boolean;
 }
 
-export function AdminDashboardStats({ adminStatus, loading = false }: AdminDashboardStatsProps) {
+export function AdminDashboardStats({
+  adminStatus,
+  loading = false,
+}: AdminDashboardStatsProps) {
   const stats = [
     {
       title: "Active Ads",
@@ -36,10 +39,12 @@ export function AdminDashboardStats({ adminStatus, loading = false }: AdminDashb
     },
     {
       title: "Validity",
-      value: adminStatus?.adminValidity ? `${adminStatus.adminValidity} days` : 'Expired',
-      subtitle: adminStatus?.adminExpiryTime 
-        ? `Until ${new Date(adminStatus.adminExpiryTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-        : 'No expiry set',
+      value: adminStatus?.adminValidity
+        ? `${adminStatus.adminValidity} days`
+        : "Expired",
+      subtitle: adminStatus?.adminExpiryTime
+        ? `Until ${new Date(adminStatus.adminExpiryTime).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`
+        : "No expiry set",
       icon: Clock,
       color: "text-orange-600 dark:text-orange-400",
       bgColor: "bg-orange-500/10",
@@ -54,18 +59,24 @@ export function AdminDashboardStats({ adminStatus, loading = false }: AdminDashb
       bgColor: "bg-purple-500/10",
       link: "/dashboard/analytics",
     },
-  ]
+  ];
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       {stats.map((stat) => {
-        const Icon = stat.icon
-        const CardWrapper = stat.link ? Link : 'div'
-        const cardProps = stat.link ? { href: stat.link } : {} as any
-        
+        const Icon = stat.icon;
+        const CardWrapper = stat.link ? Link : "div";
+        const cardProps = stat.link ? { href: stat.link } : ({} as any);
+
         return (
           <CardWrapper key={stat.title} {...cardProps}>
-            <Card className={stat.link ? "cursor-pointer hover:bg-muted/50 transition-colors" : ""}>
+            <Card
+              className={
+                stat.link
+                  ? "cursor-pointer hover:bg-muted/50 transition-colors"
+                  : ""
+              }
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {stat.title}
@@ -83,14 +94,16 @@ export function AdminDashboardStats({ adminStatus, loading = false }: AdminDashb
                 ) : (
                   <>
                     <div className="text-2xl font-bold">{stat.value}</div>
-                    <p className="text-xs text-muted-foreground mt-1">{stat.subtitle}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {stat.subtitle}
+                    </p>
                   </>
                 )}
               </CardContent>
             </Card>
           </CardWrapper>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

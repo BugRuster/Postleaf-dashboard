@@ -22,17 +22,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { MagnifyingGlass, CaretLeft, CaretRight, Users, CheckCircle } from "@phosphor-icons/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  MagnifyingGlass,
+  CaretLeft,
+  CaretRight,
+  Users,
+  CheckCircle,
+} from "@phosphor-icons/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface TickManagementProps {
   onSearch: (query: string) => void;
   searchResults: User[];
-  onUpdateTick: (userId: string, tick: 'blue' | 'golden' | null) => Promise<void>;
+  onUpdateTick: (
+    userId: string,
+    tick: "blue" | "golden" | null,
+  ) => Promise<void>;
   loading?: boolean;
   tickedUsers: User[];
   tickedUsersPagination: { page: number; limit: number };
-  onFetchTickedUsers: (tickType: "blue" | "golden" | "both", page: number) => void;
+  onFetchTickedUsers: (
+    tickType: "blue" | "golden" | "both",
+    page: number,
+  ) => void;
   loadingTickedUsers?: boolean;
 }
 
@@ -50,7 +68,9 @@ export function TickManagement({
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [activeTab, setActiveTab] = useState("ticked");
-  const [tickTypeFilter, setTickTypeFilter] = useState<"blue" | "golden" | "both">("both");
+  const [tickTypeFilter, setTickTypeFilter] = useState<
+    "blue" | "golden" | "both"
+  >("both");
 
   // Debounce search input
   useEffect(() => {
@@ -79,7 +99,10 @@ export function TickManagement({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, tickTypeFilter]);
 
-  const handleUpdateTick = async (userId: string, tick: 'blue' | 'golden' | null) => {
+  const handleUpdateTick = async (
+    userId: string,
+    tick: "blue" | "golden" | null,
+  ) => {
     setActionLoading(userId);
     try {
       await onUpdateTick(userId, tick);
@@ -90,7 +113,9 @@ export function TickManagement({
 
   const getTickBadge = (user: User) => {
     if (user.goldenTick) {
-      return <Badge className="bg-yellow-500 hover:bg-yellow-600">Golden Tick</Badge>;
+      return (
+        <Badge className="bg-yellow-500 hover:bg-yellow-600">Golden Tick</Badge>
+      );
     }
     if (user.blueTick) {
       return <Badge className="bg-blue-500 hover:bg-blue-600">Blue Tick</Badge>;
@@ -115,8 +140,10 @@ export function TickManagement({
 
   // Count ticks - only count from current page data
   const totalVerified = tickedUsers.length;
-  const blueTickCount = tickedUsers.filter(u => u.blueTick && !u.goldenTick).length;
-  const goldenTickCount = tickedUsers.filter(u => u.goldenTick).length;
+  const blueTickCount = tickedUsers.filter(
+    (u) => u.blueTick && !u.goldenTick,
+  ).length;
+  const goldenTickCount = tickedUsers.filter((u) => u.goldenTick).length;
 
   return (
     <div className="space-y-6">
@@ -140,7 +167,10 @@ export function TickManagement({
                 <CardTitle className="text-sm font-medium">
                   Total Verified
                 </CardTitle>
-                <CheckCircle className="h-4 w-4 text-muted-foreground" weight="fill" />
+                <CheckCircle
+                  className="h-4 w-4 text-muted-foreground"
+                  weight="fill"
+                />
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalVerified}</div>
@@ -184,7 +214,9 @@ export function TickManagement({
             <span className="text-sm font-medium">Filter by:</span>
             <Select
               value={tickTypeFilter}
-              onValueChange={(v) => setTickTypeFilter(v as "blue" | "golden" | "both")}
+              onValueChange={(v) =>
+                setTickTypeFilter(v as "blue" | "golden" | "both")
+              }
             >
               <SelectTrigger className="w-[180px]">
                 <SelectValue />
@@ -228,7 +260,10 @@ export function TickManagement({
                         >
                           <Users className="mx-auto h-12 w-12 text-muted-foreground/50 mb-2" />
                           <p>No verified users found</p>
-                          <p className="text-xs mt-1">Try changing the filter or add verification ticks to users</p>
+                          <p className="text-xs mt-1">
+                            Try changing the filter or add verification ticks to
+                            users
+                          </p>
                         </TableCell>
                       </TableRow>
                     ) : (
@@ -244,7 +279,10 @@ export function TickManagement({
                               <Select
                                 value={getCurrentTickValue(user)}
                                 onValueChange={(value) => {
-                                  const tick = value === "none" ? null : (value as 'blue' | 'golden');
+                                  const tick =
+                                    value === "none"
+                                      ? null
+                                      : (value as "blue" | "golden");
                                   handleUpdateTick(user._id, tick);
                                 }}
                                 disabled={actionLoading === user._id}
@@ -253,9 +291,15 @@ export function TickManagement({
                                   <SelectValue placeholder="Select tick" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="none">Remove Tick</SelectItem>
-                                  <SelectItem value="blue">Blue Tick</SelectItem>
-                                  <SelectItem value="golden">Golden Tick</SelectItem>
+                                  <SelectItem value="none">
+                                    Remove Tick
+                                  </SelectItem>
+                                  <SelectItem value="blue">
+                                    Blue Tick
+                                  </SelectItem>
+                                  <SelectItem value="golden">
+                                    Golden Tick
+                                  </SelectItem>
                                 </SelectContent>
                               </Select>
                               {actionLoading === user._id && (
@@ -326,11 +370,12 @@ export function TickManagement({
               </div>
 
               {/* Search hint */}
-              {searchQuery.trim().length > 0 && searchQuery.trim().length < 2 && (
-                <p className="text-sm text-muted-foreground">
-                  Enter at least 2 characters to search
-                </p>
-              )}
+              {searchQuery.trim().length > 0 &&
+                searchQuery.trim().length < 2 && (
+                  <p className="text-sm text-muted-foreground">
+                    Enter at least 2 characters to search
+                  </p>
+                )}
 
               {/* Loading state */}
               {loading && (
@@ -359,7 +404,7 @@ export function TickManagement({
                             colSpan={3}
                             className="text-center text-muted-foreground py-8"
                           >
-                            No users found matching "{debouncedQuery}"
+                            No users found matching &quot;{debouncedQuery}&quot;
                           </TableCell>
                         </TableRow>
                       ) : (
@@ -374,7 +419,10 @@ export function TickManagement({
                                 <Select
                                   value={getCurrentTickValue(user)}
                                   onValueChange={(value) => {
-                                    const tick = value === "none" ? null : (value as 'blue' | 'golden');
+                                    const tick =
+                                      value === "none"
+                                        ? null
+                                        : (value as "blue" | "golden");
                                     handleUpdateTick(user._id, tick);
                                   }}
                                   disabled={actionLoading === user._id}
@@ -383,9 +431,15 @@ export function TickManagement({
                                     <SelectValue placeholder="Select tick" />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="none">No Tick</SelectItem>
-                                    <SelectItem value="blue">Blue Tick</SelectItem>
-                                    <SelectItem value="golden">Golden Tick</SelectItem>
+                                    <SelectItem value="none">
+                                      No Tick
+                                    </SelectItem>
+                                    <SelectItem value="blue">
+                                      Blue Tick
+                                    </SelectItem>
+                                    <SelectItem value="golden">
+                                      Golden Tick
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                                 {actionLoading === user._id && (
@@ -407,9 +461,12 @@ export function TickManagement({
               {!loading && debouncedQuery.trim().length < 2 && (
                 <div className="rounded-md border border-dashed p-12 text-center">
                   <MagnifyingGlass className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-semibold">Search for users</h3>
+                  <h3 className="mt-4 text-lg font-semibold">
+                    Search for users
+                  </h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Enter a username to find users and manage their verification ticks
+                    Enter a username to find users and manage their verification
+                    ticks
                   </p>
                 </div>
               )}

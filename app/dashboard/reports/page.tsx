@@ -30,7 +30,11 @@ export default function ReportsPage() {
   // Check permissions
   useEffect(() => {
     const user = getUser();
-    if (!user || user.role === "user" || !canAccessReports(user.role as "admin" | "super_admin")) {
+    if (
+      !user ||
+      user.role === "user" ||
+      !canAccessReports(user.role as "admin" | "super_admin")
+    ) {
       router.push("/dashboard");
     }
   }, [router]);
@@ -87,15 +91,15 @@ export default function ReportsPage() {
             onClick={handleRefresh}
             disabled={loading}
           >
-            <ArrowsClockwise className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            <ArrowsClockwise
+              className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         }
       />
 
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <ReportList
         reports={reports}

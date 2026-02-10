@@ -14,20 +14,34 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { IoCalendarOutline } from "react-icons/io5";
-import { Eye, Link as LinkIcon, Trash, PencilSimple, Image as ImageIcon, Video } from "@phosphor-icons/react";
-import { CutsIcon } from "@/components/icons/cuts-icon";
+import {
+  Eye,
+  Link as LinkIcon,
+  Trash,
+  PencilSimple,
+  Image as ImageIcon,
+  Video,
+  CalendarBlank,
+} from "@phosphor-icons/react";
 import type { ContentItem } from "@/lib/api/ads";
 import Image from "next/image";
 
 interface ActiveAdsViewProps {
   ads: ContentItem[];
-  onUpdateLink: (contentId: string, contentType: string, link: string) => Promise<void>;
+  onUpdateLink: (
+    contentId: string,
+    contentType: string,
+    link: string,
+  ) => Promise<void>;
   onRemoveAd: (contentId: string, contentType: string) => Promise<void>;
   loading?: boolean;
 }
 
-export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: ActiveAdsViewProps) {
+export function ActiveAdsView({
+  ads,
+  onUpdateLink,
+  onRemoveAd,
+}: ActiveAdsViewProps) {
   const [editingAd, setEditingAd] = useState<ContentItem | null>(null);
   const [adLink, setAdLink] = useState("");
   const [updating, setUpdating] = useState(false);
@@ -41,7 +55,8 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
     if (!editingAd) return;
 
     // Validate for posts and cuts
-    const requiresLink = editingAd.contentType === 'post' || editingAd.contentType === 'cut';
+    const requiresLink =
+      editingAd.contentType === "post" || editingAd.contentType === "cut";
     if (requiresLink && !adLink.trim()) {
       return;
     }
@@ -63,21 +78,21 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
 
   const getContentTypeColor = (type: string) => {
     switch (type) {
-      case 'post':
-        return 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20';
-      case 'cut':
-        return 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20';
-      case 'event':
-        return 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20';
+      case "post":
+        return "bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20";
+      case "cut":
+        return "bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20";
+      case "event":
+        return "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20";
       default:
-        return 'bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20';
+        return "bg-gray-500/10 text-gray-700 dark:text-gray-400 border-gray-500/20";
     }
   };
 
   const getMediaPreview = (item: ContentItem) => {
     const content = item.content as any;
-    
-    if (item.contentType === 'post') {
+
+    if (item.contentType === "post") {
       if (content.image_url && content.image_url.length > 0) {
         return (
           <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
@@ -88,7 +103,7 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
               className="object-cover"
               unoptimized
             />
-            {content.type === 'image' && (
+            {content.type === "image" && (
               <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded-md text-xs flex items-center gap-1">
                 <ImageIcon className="h-3 w-3" />
                 Image
@@ -98,8 +113,8 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
         );
       }
     }
-    
-    if (item.contentType === 'cut') {
+
+    if (item.contentType === "cut") {
       if (content.media_url) {
         return (
           <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
@@ -119,8 +134,8 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
         );
       }
     }
-    
-    if (item.contentType === 'event') {
+
+    if (item.contentType === "event") {
       if (content.event_images && content.event_images.length > 0) {
         return (
           <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
@@ -135,7 +150,7 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
         );
       }
     }
-    
+
     return (
       <div className="w-full h-48 bg-gradient-to-br from-muted to-muted/50 rounded-t-lg flex items-center justify-center">
         <div className="text-center">
@@ -155,16 +170,22 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {ads.map((ad) => {
           const content = ad.content as any;
-          const title = content.title || content.caption || 'Untitled';
-          
+          const title = content.title || content.caption || "Untitled";
+
           return (
-            <Card key={ad._id} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card
+              key={ad._id}
+              className="overflow-hidden hover:shadow-lg transition-shadow"
+            >
               {/* Media Preview */}
               {getMediaPreview(ad)}
-              
+
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between gap-2">
-                  <Badge variant="outline" className={getContentTypeColor(ad.contentType)}>
+                  <Badge
+                    variant="outline"
+                    className={getContentTypeColor(ad.contentType)}
+                  >
                     {ad.contentType}
                   </Badge>
                   <Badge className="bg-green-500 hover:bg-green-600">
@@ -172,13 +193,11 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
                   </Badge>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="space-y-4">
                 {/* Content Info */}
                 <div>
-                  <h3 className="font-semibold line-clamp-2 mb-2">
-                    {title}
-                  </h3>
+                  <h3 className="font-semibold line-clamp-2 mb-2">{title}</h3>
                   {content.description && (
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {content.description}
@@ -192,27 +211,34 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
                     <Eye className="h-4 w-4" />
                     <span>{content.views || 0}</span>
                   </div>
-                  {ad.contentType !== 'event' && content.ad_link && (
+                  {ad.contentType !== "event" && content.ad_link && (
                     <div className="flex items-center gap-1">
                       <LinkIcon className="h-4 w-4" />
                       <span>Link set</span>
                     </div>
                   )}
-                  {ad.contentType === 'event' && content.event_date && (
+                  {ad.contentType === "event" && content.event_date && (
                     <div className="flex items-center gap-1">
-                      <IoCalendarOutline className="h-4 w-4" />
-                      <span>{new Date(content.event_date).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric'
-                      })}</span>
+                      <CalendarBlank className="h-4 w-4" />
+                      <span>
+                        {new Date(content.event_date).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                          },
+                        )}
+                      </span>
                     </div>
                   )}
                 </div>
 
                 {/* Ad Link Display */}
-                {ad.contentType !== 'event' && content.ad_link && (
+                {ad.contentType !== "event" && content.ad_link && (
                   <div className="p-3 bg-muted rounded-md">
-                    <p className="text-xs text-muted-foreground mb-1">Ad Link:</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      Ad Link:
+                    </p>
                     <a
                       href={content.ad_link}
                       target="_blank"
@@ -226,7 +252,7 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
 
                 {/* Actions */}
                 <div className="flex gap-2 pt-2 border-t">
-                  {ad.contentType !== 'event' && (
+                  {ad.contentType !== "event" && (
                     <Button
                       size="sm"
                       variant="outline"
@@ -234,14 +260,14 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
                       onClick={() => handleEditLink(ad)}
                     >
                       <PencilSimple className="h-4 w-4 mr-1" />
-                      {content.ad_link ? 'Edit Link' : 'Add Link'}
+                      {content.ad_link ? "Edit Link" : "Add Link"}
                     </Button>
                   )}
                   <Button
                     size="sm"
                     variant="destructive"
                     onClick={() => handleRemove(ad)}
-                    className={ad.contentType === 'event' ? 'flex-1' : ''}
+                    className={ad.contentType === "event" ? "flex-1" : ""}
                   >
                     <Trash className="h-4 w-4" />
                   </Button>
@@ -253,33 +279,44 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
       </div>
 
       {/* Edit Link Dialog */}
-      <Dialog open={!!editingAd} onOpenChange={(open) => !open && setEditingAd(null)}>
+      <Dialog
+        open={!!editingAd}
+        onOpenChange={(open) => !open && setEditingAd(null)}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {(editingAd?.content as any)?.ad_link ? 'Update' : 'Add'} Ad Link
+              {(editingAd?.content as any)?.ad_link ? "Update" : "Add"} Ad Link
             </DialogTitle>
             <DialogDescription>
-              {editingAd?.contentType === 'event' 
-                ? 'Ad link is optional for events'
-                : 'Enter the URL where users will be directed when they click on this ad'}
+              {editingAd?.contentType === "event"
+                ? "Ad link is optional for events"
+                : "Enter the URL where users will be directed when they click on this ad"}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             {editingAd && (
               <div className="p-3 bg-muted rounded-lg">
                 <p className="text-sm font-medium mb-1">
-                  {(editingAd.content as any).title || (editingAd.content as any).caption || 'Untitled'}
+                  {(editingAd.content as any).title ||
+                    (editingAd.content as any).caption ||
+                    "Untitled"}
                 </p>
-                <Badge variant="outline" className={getContentTypeColor(editingAd.contentType)}>
+                <Badge
+                  variant="outline"
+                  className={getContentTypeColor(editingAd.contentType)}
+                >
                   {editingAd.contentType}
                 </Badge>
               </div>
             )}
-            
+
             <div className="space-y-2">
               <Label htmlFor="adLink">
-                Ad Link {editingAd?.contentType !== 'event' && <span className="text-destructive">*</span>}
+                Ad Link{" "}
+                {editingAd?.contentType !== "event" && (
+                  <span className="text-destructive">*</span>
+                )}
               </Label>
               <Input
                 id="adLink"
@@ -289,15 +326,20 @@ export function ActiveAdsView({ ads, onUpdateLink, onRemoveAd, loading }: Active
                 onChange={(e) => setAdLink(e.target.value)}
                 disabled={updating}
               />
-              {editingAd?.contentType === 'event' && (
+              {editingAd?.contentType === "event" && (
                 <p className="text-xs text-muted-foreground">
-                  Optional: Add a link for users to get more information about the event
+                  Optional: Add a link for users to get more information about
+                  the event
                 </p>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingAd(null)} disabled={updating}>
+            <Button
+              variant="outline"
+              onClick={() => setEditingAd(null)}
+              disabled={updating}
+            >
               Cancel
             </Button>
             <Button onClick={handleUpdateLink} disabled={updating}>

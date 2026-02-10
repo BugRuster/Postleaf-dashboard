@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-  getAvailableContent, 
-  createAd, 
-  deleteAd, 
+import {
+  getAvailableContent,
+  createAd,
+  deleteAd,
   updateAdLink,
-  type ContentItem 
+  type ContentItem,
 } from "@/lib/api/ads";
 import { Button } from "@/components/ui/button";
 import { Plus, Megaphone } from "@phosphor-icons/react";
@@ -24,15 +24,15 @@ export default function AdsPage() {
 
   // Filter active ads and available content
   // Handle both is_advertisement (posts/cuts) and advertisement (events)
-  const activeAds = content.filter(c => {
-    if (c.contentType === 'event') {
+  const activeAds = content.filter((c) => {
+    if (c.contentType === "event") {
       return (c.content as any).advertisement === true;
     }
     return c.content.is_advertisement === true;
   });
-  
-  const availableContent = content.filter(c => {
-    if (c.contentType === 'event') {
+
+  const availableContent = content.filter((c) => {
+    if (c.contentType === "event") {
       return (c.content as any).advertisement !== true;
     }
     return c.content.is_advertisement !== true;
@@ -56,33 +56,47 @@ export default function AdsPage() {
     fetchContent();
   }, []);
 
-  const handleCreateAd = async (contentId: string, contentType: string, adLink?: string) => {
+  const handleCreateAd = async (
+    contentId: string,
+    contentType: string,
+    adLink?: string,
+  ) => {
     try {
       await createAd({
         contentId,
-        contentType: contentType as 'post' | 'cut' | 'event',
+        contentType: contentType as "post" | "cut" | "event",
         adLink,
       });
       await fetchContent();
       setError(null);
     } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || 
-                          err?.message || 
-                          "Failed to create advertisement.";
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to create advertisement.";
       setError(errorMessage);
       throw err;
     }
   };
 
-  const handleUpdateLink = async (contentId: string, contentType: string, adLink: string) => {
+  const handleUpdateLink = async (
+    contentId: string,
+    contentType: string,
+    adLink: string,
+  ) => {
     try {
-      await updateAdLink(contentId, contentType as 'post' | 'cut' | 'event', adLink);
+      await updateAdLink(
+        contentId,
+        contentType as "post" | "cut" | "event",
+        adLink,
+      );
       await fetchContent();
       setError(null);
     } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || 
-                          err?.message || 
-                          "Failed to update ad link.";
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update ad link.";
       setError(errorMessage);
       throw err;
     }
@@ -90,13 +104,14 @@ export default function AdsPage() {
 
   const handleRemoveAd = async (contentId: string, contentType: string) => {
     try {
-      await deleteAd(contentId, contentType as 'post' | 'cut' | 'event');
+      await deleteAd(contentId, contentType as "post" | "cut" | "event");
       await fetchContent();
       setError(null);
     } catch (err: any) {
-      const errorMessage = err?.response?.data?.message || 
-                          err?.message || 
-                          "Failed to remove advertisement.";
+      const errorMessage =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to remove advertisement.";
       setError(errorMessage);
     }
   };
@@ -127,19 +142,26 @@ export default function AdsPage() {
         <div className="flex items-center gap-2 mb-4">
           <Megaphone className="h-5 w-5" weight="fill" />
           <h2 className="text-xl font-semibold">Active Advertisements</h2>
-          <span className="text-sm text-muted-foreground">({activeAds.length})</span>
+          <span className="text-sm text-muted-foreground">
+            ({activeAds.length})
+          </span>
         </div>
 
         {loading ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-[200px] rounded-lg border bg-muted animate-pulse" />
+              <div
+                key={i}
+                className="h-[200px] rounded-lg border bg-muted animate-pulse"
+              />
             ))}
           </div>
         ) : activeAds.length === 0 ? (
           <div className="rounded-lg border border-dashed p-12 text-center">
             <Megaphone className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No Active Advertisements</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              No Active Advertisements
+            </h3>
             <p className="text-sm text-muted-foreground mb-4">
               Create your first advertisement to start promoting your content
             </p>

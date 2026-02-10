@@ -3,8 +3,18 @@
  * Visualizes admin status metrics using charts
  */
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AdminStatus } from "@/lib/api/admins";
@@ -81,7 +91,10 @@ export function StatusCharts({ data, loading = false }: StatusChartsProps) {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[200px] w-full">
-          <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
+          <BarChart
+            data={chartData}
+            margin={{ top: 10, right: 10, left: 10, bottom: 5 }}
+          >
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="name"

@@ -32,7 +32,8 @@ export function CreateAdModal({
   const [error, setError] = useState<string | null>(null);
 
   // Ad link is optional for events, required for posts and cuts
-  const requiresAdLink = content?.contentType === "post" || content?.contentType === "cut";
+  const requiresAdLink =
+    content?.contentType === "post" || content?.contentType === "cut";
   const showAdLinkField = true; // Always show the field for all content types
 
   const handleConfirm = async () => {
@@ -62,9 +63,10 @@ export function CreateAdModal({
       onOpenChange(false);
     } catch (error: any) {
       // Extract error message from API response
-      const errorMessage = error?.response?.data?.message || 
-                          error?.message || 
-                          "Failed to create advertisement. Please try again.";
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to create advertisement. Please try again.";
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -94,12 +96,16 @@ export function CreateAdModal({
             <div className="rounded-md bg-muted p-4 space-y-2">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Content Type:</span>
-                <span className="text-sm capitalize">{content.contentType}</span>
+                <span className="text-sm capitalize">
+                  {content.contentType}
+                </span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Title:</span>
                 <span className="text-sm truncate max-w-[200px]">
-                  {content.content.title || content.content.caption || "Untitled"}
+                  {content.content.title ||
+                    content.content.caption ||
+                    "Untitled"}
                 </span>
               </div>
             </div>
@@ -107,7 +113,10 @@ export function CreateAdModal({
             {showAdLinkField && (
               <div className="space-y-2">
                 <Label htmlFor="adLink" className="block">
-                  Ad Link {requiresAdLink && <span className="text-destructive">*</span>}
+                  Ad Link{" "}
+                  {requiresAdLink && (
+                    <span className="text-destructive">*</span>
+                  )}
                 </Label>
                 <Input
                   id="adLink"
@@ -119,7 +128,7 @@ export function CreateAdModal({
                   className="bg-background text-foreground border-input min-h-[40px] w-full"
                 />
                 <p className="text-xs text-muted-foreground">
-                  {requiresAdLink 
+                  {requiresAdLink
                     ? "Required: Enter the URL where users will be directed when they click on this ad"
                     : "Optional: Enter the URL where users will be directed when they click on this ad"}
                 </p>

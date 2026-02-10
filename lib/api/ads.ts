@@ -3,14 +3,14 @@
  * Handles advertisement-related API calls including content, ads CRUD operations
  */
 
-import apiClient from './client';
+import apiClient from "./client";
 
 /**
  * Content item structure as returned by the API
  */
 export interface ContentItem {
   _id: string;
-  contentType: 'post' | 'cut' | 'event';
+  contentType: "post" | "cut" | "event";
   content: {
     _id: string;
     user_id?: string;
@@ -57,7 +57,7 @@ export interface ContentResponse {
  */
 export interface CreateAdRequest {
   contentId: string;
-  contentType: 'post' | 'cut' | 'event';
+  contentType: "post" | "cut" | "event";
   adLink?: string;
 }
 
@@ -65,16 +65,19 @@ export interface CreateAdRequest {
  * Update ad link request
  */
 export interface UpdateAdLinkRequest {
-  contentType: 'post' | 'cut' | 'event';
+  contentType: "post" | "cut" | "event";
   adLink: string;
 }
 
 /**
  * Fetches content available for promotion
  */
-export async function getAvailableContent(page = 1, limit = 20): Promise<ContentResponse> {
-  const response = await apiClient.get('/d/ads/available', {
-    params: { page, limit }
+export async function getAvailableContent(
+  page = 1,
+  limit = 20,
+): Promise<ContentResponse> {
+  const response = await apiClient.get("/d/ads/available", {
+    params: { page, limit },
   });
   return response.data;
 }
@@ -83,15 +86,18 @@ export async function getAvailableContent(page = 1, limit = 20): Promise<Content
  * Creates a new advertisement
  */
 export async function createAd(data: CreateAdRequest): Promise<void> {
-  await apiClient.post('/d/ads', data);
+  await apiClient.post("/d/ads", data);
 }
 
 /**
  * Deletes an advertisement by content ID
  */
-export async function deleteAd(contentId: string, contentType: 'post' | 'cut' | 'event'): Promise<void> {
+export async function deleteAd(
+  contentId: string,
+  contentType: "post" | "cut" | "event",
+): Promise<void> {
   await apiClient.delete(`/d/ads/${contentId}`, {
-    params: { contentType }
+    params: { contentType },
   });
 }
 
@@ -99,12 +105,12 @@ export async function deleteAd(contentId: string, contentType: 'post' | 'cut' | 
  * Updates ad link for content
  */
 export async function updateAdLink(
-  contentId: string, 
-  contentType: 'post' | 'cut' | 'event', 
-  adLink: string
+  contentId: string,
+  contentType: "post" | "cut" | "event",
+  adLink: string,
 ): Promise<void> {
   await apiClient.put(`/d/ads/${contentId}`, {
     contentType,
-    adLink
+    adLink,
   });
 }

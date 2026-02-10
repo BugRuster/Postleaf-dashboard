@@ -1,36 +1,36 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useTheme } from "next-themes"
-import { 
-  House, 
-  ChartBar, 
-  Megaphone, 
-  Flag, 
-  Users, 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
+import {
+  House,
+  ChartBar,
+  Megaphone,
+  Flag,
+  Users,
   CheckCircle,
   UserCircle,
   Moon,
   Sun,
-  type Icon as PhosphorIcon
-} from "@phosphor-icons/react"
-import { Separator } from "@/components/ui/separator"
-import { type UserRole } from "@/lib/auth/permissions"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+  type Icon as PhosphorIcon,
+} from "@phosphor-icons/react";
+import { Separator } from "@/components/ui/separator";
+import { type UserRole } from "@/lib/auth/permissions";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
-  userRole: UserRole
-  isMobileOpen?: boolean
-  onMobileClose?: () => void
+  userRole: UserRole;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
 interface NavItem {
-  label: string
-  href: string
-  icon: PhosphorIcon
-  requiredRole?: 'super_admin' | 'admin'
+  label: string;
+  href: string;
+  icon: PhosphorIcon;
+  requiredRole?: "super_admin" | "admin";
 }
 
 const navItems: NavItem[] = [
@@ -43,78 +43,84 @@ const navItems: NavItem[] = [
     label: "Reports",
     href: "/dashboard/reports",
     icon: Flag,
-    requiredRole: 'super_admin',
+    requiredRole: "super_admin",
   },
   {
     label: "Admin Management",
     href: "/dashboard/admins",
     icon: Users,
-    requiredRole: 'super_admin',
+    requiredRole: "super_admin",
   },
   {
     label: "User Ticks",
     href: "/dashboard/users/ticks",
     icon: CheckCircle,
-    requiredRole: 'super_admin',
+    requiredRole: "super_admin",
   },
   {
     label: "Advertisements",
     href: "/dashboard/ads",
     icon: Megaphone,
-    requiredRole: 'admin',
+    requiredRole: "admin",
   },
   {
     label: "Analytics",
     href: "/dashboard/analytics",
     icon: ChartBar,
-    requiredRole: 'admin',
+    requiredRole: "admin",
   },
-]
+];
 
-export function Sidebar({ userRole, isMobileOpen = false, onMobileClose }: SidebarProps) {
-  const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
+export function Sidebar({
+  userRole,
+  isMobileOpen = false,
+  onMobileClose,
+}: SidebarProps) {
+  const pathname = usePathname();
+  const { theme, setTheme } = useTheme();
 
   // Filter navigation items based on user role
   const visibleNavItems = navItems.filter((item) => {
     if (!item.requiredRole) {
-      return true
+      return true;
     }
-    
-    return item.requiredRole === userRole
-  })
+
+    return item.requiredRole === userRole;
+  });
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark")
-  }
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   const handleLinkClick = () => {
     // Close mobile sidebar when a link is clicked
     if (onMobileClose) {
-      onMobileClose()
+      onMobileClose();
     }
-  }
+  };
 
   return (
     <>
       {/* Mobile overlay backdrop */}
       {isMobileOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={onMobileClose}
           aria-hidden="true"
         />
       )}
-      
+
       {/* Sidebar */}
-      <div className={cn(
-        "fixed inset-y-0 left-0 z-50 flex h-full w-64 flex-col border-r bg-background transition-transform duration-300 lg:static lg:translate-x-0",
-        isMobileOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-50 flex h-full w-64 flex-col border-r bg-background transition-transform duration-300 lg:static lg:translate-x-0",
+          isMobileOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
         {/* Logo/Header */}
         <div className="flex h-16 items-center justify-between border-b px-6">
           <h1 className="text-xl font-bold">Admin Dashboard</h1>
-          
+
           {/* Close button for mobile */}
           <button
             onClick={onMobileClose}
@@ -141,12 +147,14 @@ export function Sidebar({ userRole, isMobileOpen = false, onMobileClose }: Sideb
         {/* Navigation Links */}
         <nav className="flex-1 space-y-1 p-4">
           {visibleNavItems.map((item) => {
-            const Icon = item.icon
+            const Icon = item.icon;
             // For /dashboard, only match exact path, not sub-paths
-            const isActive = item.href === '/dashboard'
-              ? pathname === item.href
-              : pathname === item.href || pathname?.startsWith(item.href + '/')
-            
+            const isActive =
+              item.href === "/dashboard"
+                ? pathname === item.href
+                : pathname === item.href ||
+                  pathname?.startsWith(item.href + "/");
+
             return (
               <Link
                 key={item.href}
@@ -156,13 +164,16 @@ export function Sidebar({ userRole, isMobileOpen = false, onMobileClose }: Sideb
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   isActive
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                <Icon className="size-5" weight={isActive ? "fill" : "regular"} />
+                <Icon
+                  className="size-5"
+                  weight={isActive ? "fill" : "regular"}
+                />
                 {item.label}
               </Link>
-            )
+            );
           })}
         </nav>
 
@@ -188,7 +199,7 @@ export function Sidebar({ userRole, isMobileOpen = false, onMobileClose }: Sideb
               </>
             )}
           </Button>
-          
+
           <Link
             href="/dashboard/profile"
             onClick={handleLinkClick}
@@ -196,14 +207,17 @@ export function Sidebar({ userRole, isMobileOpen = false, onMobileClose }: Sideb
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
               pathname === "/dashboard/profile"
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
-            <UserCircle className="size-5" weight={pathname === "/dashboard/profile" ? "fill" : "regular"} />
+            <UserCircle
+              className="size-5"
+              weight={pathname === "/dashboard/profile" ? "fill" : "regular"}
+            />
             Profile
           </Link>
         </div>
       </div>
     </>
-  )
+  );
 }

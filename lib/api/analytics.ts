@@ -3,7 +3,7 @@
  * Handles analytics-related API calls for aggregated and content-specific data
  */
 
-import apiClient from './client';
+import apiClient from "./client";
 
 /**
  * Timeline data point for time-series analytics
@@ -33,7 +33,7 @@ export interface ContentTypeAnalytics {
  */
 export interface TopContentItem {
   id: string;
-  type: 'post' | 'cut' | 'event';
+  type: "post" | "cut" | "event";
   title: string;
   views: number;
   imageUrl?: string;
@@ -46,7 +46,7 @@ export interface TopContentItem {
  */
 export interface ActiveAdItem {
   id: string;
-  type: 'post' | 'cut' | 'event';
+  type: "post" | "cut" | "event";
   title: string;
   views: number;
   likes: number;
@@ -76,7 +76,7 @@ export interface AnalyticsData {
  */
 export interface ContentAnalyticsData {
   id: string;
-  type: 'post' | 'cut' | 'event';
+  type: "post" | "cut" | "event";
   title: string;
   views: number;
   likes: number;
@@ -93,7 +93,7 @@ export interface ContentAnalyticsData {
  * @returns Promise with analytics data for posts, cuts, and events
  */
 export async function getAnalytics(): Promise<AnalyticsData> {
-  const response = await apiClient.get<{ data: AnalyticsData }>('/d/analytics');
+  const response = await apiClient.get<{ data: AnalyticsData }>("/d/analytics");
   return response.data.data;
 }
 
@@ -104,11 +104,11 @@ export async function getAnalytics(): Promise<AnalyticsData> {
  * @returns Promise with detailed analytics data
  */
 export async function getContentAnalytics(
-  contentType: 'post' | 'cut' | 'event',
-  contentId: string
+  contentType: "post" | "cut" | "event",
+  contentId: string,
 ): Promise<ContentAnalyticsData> {
   const response = await apiClient.get<{ data: ContentAnalyticsData }>(
-    `/d/analytics/${contentType}/${contentId}`
+    `/d/analytics/${contentType}/${contentId}`,
   );
   return response.data.data;
 }

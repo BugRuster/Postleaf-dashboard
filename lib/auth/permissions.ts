@@ -3,7 +3,7 @@
  * Provides role-based access control functions
  */
 
-export type UserRole = 'admin' | 'super_admin';
+export type UserRole = "admin" | "super_admin";
 
 export interface UserWithRole {
   role: UserRole;
@@ -16,7 +16,7 @@ export interface UserWithRole {
  * @returns True if the user can access admin management, false otherwise
  */
 export function canAccessAdminManagement(role: UserRole): boolean {
-  return role === 'super_admin';
+  return role === "super_admin";
 }
 
 /**
@@ -26,7 +26,7 @@ export function canAccessAdminManagement(role: UserRole): boolean {
  * @returns True if the user can access user tick management, false otherwise
  */
 export function canAccessUserTicks(role: UserRole): boolean {
-  return role === 'super_admin';
+  return role === "super_admin";
 }
 
 /**
@@ -36,7 +36,7 @@ export function canAccessUserTicks(role: UserRole): boolean {
  * @returns True if the user can access reports, false otherwise
  */
 export function canAccessReports(role: UserRole): boolean {
-  return role === 'super_admin';
+  return role === "super_admin";
 }
 
 /**
@@ -46,7 +46,7 @@ export function canAccessReports(role: UserRole): boolean {
  * @returns True if the user can access advertisement management, false otherwise
  */
 export function canAccessAdvertisements(role: UserRole): boolean {
-  return role === 'admin';
+  return role === "admin";
 }
 
 /**
@@ -56,7 +56,7 @@ export function canAccessAdvertisements(role: UserRole): boolean {
  * @returns True if the user can access analytics, false otherwise
  */
 export function canAccessAnalytics(role: UserRole): boolean {
-  return role === 'admin';
+  return role === "admin";
 }
 
 /**
@@ -66,7 +66,7 @@ export function canAccessAnalytics(role: UserRole): boolean {
  * @returns True if the user can access the dashboard, false otherwise
  */
 export function canAccessDashboard(role: UserRole): boolean {
-  return role === 'admin' || role === 'super_admin';
+  return role === "admin" || role === "super_admin";
 }
 
 /**
@@ -78,27 +78,27 @@ export function getAccessibleRoutes(role: UserRole): string[] {
   const routes: string[] = [];
 
   if (canAccessDashboard(role)) {
-    routes.push('/dashboard');
+    routes.push("/dashboard");
   }
 
   if (canAccessReports(role)) {
-    routes.push('/reports');
+    routes.push("/reports");
   }
 
   if (canAccessAdvertisements(role)) {
-    routes.push('/ads');
+    routes.push("/ads");
   }
 
   if (canAccessAnalytics(role)) {
-    routes.push('/analytics');
+    routes.push("/analytics");
   }
 
   if (canAccessAdminManagement(role)) {
-    routes.push('/admins');
+    routes.push("/admins");
   }
 
   if (canAccessUserTicks(role)) {
-    routes.push('/users/ticks');
+    routes.push("/users/ticks");
   }
 
   return routes;

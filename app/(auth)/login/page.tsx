@@ -1,23 +1,28 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import Image from "next/image"
-import Link from "next/link"
-import { login, type LoginRequest } from "@/lib/api/auth"
-import { setToken, setUser } from "@/lib/auth/token"
-import { loginSchema, type LoginFormData } from "@/lib/utils/validation"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { EnvelopeSimple, Lock, ArrowRight, ShieldCheck } from "@phosphor-icons/react"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import Link from "next/link";
+import { login, type LoginRequest } from "@/lib/api/auth";
+import { setToken, setUser } from "@/lib/auth/token";
+import { loginSchema, type LoginFormData } from "@/lib/utils/validation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  EnvelopeSimple,
+  Lock,
+  ArrowRight,
+  ShieldCheck,
+} from "@phosphor-icons/react";
 
 export default function LoginPage() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -26,80 +31,95 @@ export default function LoginPage() {
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     mode: "onBlur",
-  })
+  });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true)
-    setErrorMessage(null)
+    setIsLoading(true);
+    setErrorMessage(null);
 
     try {
-      const isEmail = data.identifier.includes('@')
-      
-      const loginPayload: LoginRequest = isEmail 
+      const isEmail = data.identifier.includes("@");
+
+      const loginPayload: LoginRequest = isEmail
         ? { email: data.identifier, password: data.password }
-        : { username: data.identifier, password: data.password }
-      
-      const response = await login(loginPayload)
-      
-      if (!response.data.user.isAdmin || (response.data.role !== 'admin' && response.data.role !== 'super_admin')) {
-        setErrorMessage("Access denied. Only admins and super admins can access this dashboard.")
-        setIsLoading(false)
-        return
+        : { username: data.identifier, password: data.password };
+
+      const response = await login(loginPayload);
+
+      if (
+        !response.data.user.isAdmin ||
+        (response.data.role !== "admin" && response.data.role !== "super_admin")
+      ) {
+        setErrorMessage(
+          "Access denied. Only admins and super admins can access this dashboard.",
+        );
+        setIsLoading(false);
+        return;
       }
 
       if (response.data.user.adminExpiryTime) {
-        const expiryTime = new Date(response.data.user.adminExpiryTime)
-        const currentTime = new Date()
-        
+        const expiryTime = new Date(response.data.user.adminExpiryTime);
+        const currentTime = new Date();
+
         if (currentTime >= expiryTime) {
-          setErrorMessage("Your admin access has expired. Please contact a super admin.")
-          setIsLoading(false)
-          return
+          setErrorMessage(
+            "Your admin access has expired. Please contact a super admin.",
+          );
+          setIsLoading(false);
+          return;
         }
       }
-      
-      const authToken = response.data.token
-      const userData = response.data.user
-      
-      setToken(authToken)
-      setUser(userData)
-      
-      router.push("/dashboard")
+
+      const authToken = response.data.token;
+      const userData = response.data.user;
+
+      setToken(authToken);
+      setUser(userData);
+
+      router.push("/dashboard");
     } catch (error: unknown) {
-      if (error && typeof error === 'object' && 'response' in error) {
-        const axiosError = error as { 
-          response?: { 
-            status: number
+      if (error && typeof error === "object" && "response" in error) {
+        const axiosError = error as {
+          response?: {
+            status: number;
             data?: {
-              message?: string
-              error?: string
-            }
-          } 
-        }
-        
-        const backendMessage = axiosError.response?.data?.message || axiosError.response?.data?.error
-        
+              message?: string;
+              error?: string;
+            };
+          };
+        };
+
+        const backendMessage =
+          axiosError.response?.data?.message ||
+          axiosError.response?.data?.error;
+
         if (backendMessage) {
-          setErrorMessage(backendMessage)
+          setErrorMessage(backendMessage);
         } else {
-          const status = axiosError.response?.status
+          const status = axiosError.response?.status;
           if (status === 401 || status === 400) {
-            setErrorMessage("Invalid username/email or password. Please try again.")
+            setErrorMessage(
+              "Invalid username/email or password. Please try again.",
+            );
           } else if (status === 403) {
-            setErrorMessage("Access denied. You don't have permission to log in.")
+            setErrorMessage(
+              "Access denied. You don't have permission to log in.",
+            );
           } else {
-            setErrorMessage("An error occurred. Please try again later.")
+            setErrorMessage("An error occurred. Please try again later.");
           }
         }
-      } else if (error && typeof error === 'object' && 'request' in error) {
-        setErrorMessage("Unable to connect to server. Please check your internet connection.")
+      } else if (error && typeof error === "object" && "request" in error) {
+        setErrorMessage(
+          "Unable to connect to server. Please check your internet connection.",
+        );
       } else {
-        setErrorMessage("An unexpected error occurred. Please try again.")
+        setErrorMessage("An unexpected error occurred. Please try again.");
       }
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -117,16 +137,21 @@ export default function LoginPage() {
             />
           </div>
         </div>
-        
+
         <div className="relative z-10 space-y-6">
           <div className="flex items-center gap-3 mb-4">
-            <ShieldCheck size={48} weight="fill" className="text-white dark:text-black" />
+            <ShieldCheck
+              size={48}
+              weight="fill"
+              className="text-white dark:text-black"
+            />
           </div>
           <h1 className="text-5xl font-bold text-white dark:text-black leading-tight">
             Admin Dashboard
           </h1>
           <p className="text-xl text-white/90 dark:text-black/90">
-            Manage your platform, monitor activity, and keep your community safe.
+            Manage your platform, monitor activity, and keep your community
+            safe.
           </p>
         </div>
 
@@ -166,11 +191,17 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="identifier" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="identifier"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Username or Email
               </Label>
               <div className="relative">
-                <EnvelopeSimple size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <EnvelopeSimple
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
                 <Input
                   id="identifier"
                   type="text"
@@ -181,16 +212,24 @@ export default function LoginPage() {
                 />
               </div>
               {errors.identifier && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.identifier.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {errors.identifier.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700 dark:text-gray-300"
+              >
                 Password
               </Label>
               <div className="relative">
-                <Lock size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10" />
+                <Lock
+                  size={20}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 z-10"
+                />
                 <Input
                   id="password"
                   type="password"
@@ -201,7 +240,9 @@ export default function LoginPage() {
                 />
               </div>
               {errors.password && (
-                <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -223,16 +264,24 @@ export default function LoginPage() {
 
           <div className="text-center text-xs text-gray-500 dark:text-gray-500">
             By continuing, you agree to our{" "}
-            <Link href="https://postleaf.live/tandc.html" target="_blank" className="underline hover:text-gray-700 dark:hover:text-gray-300">
+            <Link
+              href="https://postleaf.live/tandc.html"
+              target="_blank"
+              className="underline hover:text-gray-700 dark:hover:text-gray-300"
+            >
               Terms
             </Link>{" "}
             and{" "}
-            <Link href="https://postleaf.live/privacypolicy.html" target="_blank" className="underline hover:text-gray-700 dark:hover:text-gray-300">
+            <Link
+              href="https://postleaf.live/privacypolicy.html"
+              target="_blank"
+              className="underline hover:text-gray-700 dark:hover:text-gray-300"
+            >
               Privacy Policy
             </Link>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

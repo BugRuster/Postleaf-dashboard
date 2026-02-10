@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { WarningCircle } from '@phosphor-icons/react';
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { WarningCircle } from "@phosphor-icons/react";
 
 /**
  * Global Error Page
@@ -18,7 +25,7 @@ export default function Error({
 }) {
   useEffect(() => {
     // Log error to console
-    console.error('Global error:', error);
+    console.error("Global error:", error);
   }, [error]);
 
   return (
@@ -30,11 +37,12 @@ export default function Error({
             <CardTitle>Something went wrong</CardTitle>
           </div>
           <CardDescription>
-            An unexpected error occurred. Please try again or contact support if the problem persists.
+            An unexpected error occurred. Please try again or contact support if
+            the problem persists.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === "development" && (
             <div className="mt-4 p-4 bg-muted rounded-md">
               <p className="text-sm font-mono text-muted-foreground break-words">
                 {error.message}
@@ -52,7 +60,7 @@ export default function Error({
             Try Again
           </Button>
           <Button
-            onClick={() => window.location.href = '/dashboard'}
+            onClick={() => (window.location.href = "/dashboard")}
             variant="outline"
           >
             Go to Dashboard

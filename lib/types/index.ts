@@ -1,15 +1,15 @@
 /**
  * Centralized Type Definitions
- * 
+ *
  * This file serves as the single source of truth for all TypeScript types
  * used throughout the admin dashboard application. It re-exports types from
  * various modules for easier imports and better maintainability.
- * 
+ *
  * Usage:
  * ```typescript
  * import type { Admin, Report, LoginRequest } from '@/lib/types';
  * ```
- * 
+ *
  * Organization:
  * - Authentication types
  * - Admin management types
@@ -33,7 +33,7 @@ export type {
   LoginRequest,
   User as AuthUser,
   LoginResponse,
-} from '@/lib/api/auth';
+} from "@/lib/api/auth";
 
 // ============================================================================
 // Admin Management Types
@@ -46,7 +46,7 @@ export type {
   PaginationParams,
   UpdateValidityRequest,
   UpdateCreditsRequest,
-} from '@/lib/api/admins';
+} from "@/lib/api/admins";
 
 // ============================================================================
 // Report Management Types
@@ -56,7 +56,7 @@ export type {
   Report,
   ReportFilters,
   ReportListResponse,
-} from '@/lib/api/reports';
+} from "@/lib/api/reports";
 
 // ============================================================================
 // Advertisement Types
@@ -68,7 +68,7 @@ export type {
   CreateAdRequest,
   UpdateAdLinkRequest,
   Pagination,
-} from '@/lib/api/ads';
+} from "@/lib/api/ads";
 
 // ============================================================================
 // Analytics Types
@@ -80,7 +80,7 @@ export type {
   TopContentItem,
   AnalyticsData,
   ContentAnalyticsData,
-} from '@/lib/api/analytics';
+} from "@/lib/api/analytics";
 
 // ============================================================================
 // User Management Types
@@ -90,15 +90,13 @@ export type {
   User,
   UserSearchResponse,
   PaginatedResponse as UserPaginatedResponse,
-} from '@/lib/api/users';
+} from "@/lib/api/users";
 
 // ============================================================================
 // API Client Types
 // ============================================================================
 
-export type {
-  ApiError,
-} from '@/lib/api/client';
+export type { ApiError } from "@/lib/api/client";
 
 // ============================================================================
 // Error Handling Types
@@ -107,7 +105,7 @@ export type {
 export type {
   ValidationError,
   ApiErrorResponse,
-} from '@/lib/utils/errorHandling';
+} from "@/lib/utils/errorHandling";
 
 // ============================================================================
 // Validation Types
@@ -122,16 +120,13 @@ export type {
   UserSearchFormData,
   UpdateTickFormData,
   ReportFiltersFormData,
-} from '@/lib/utils/validation';
+} from "@/lib/utils/validation";
 
 // ============================================================================
 // Permission Types
 // ============================================================================
 
-export type {
-  UserRole,
-  UserWithRole,
-} from '@/lib/auth/permissions';
+export type { UserRole, UserWithRole } from "@/lib/auth/permissions";
 
 // ============================================================================
 // Common Type Utilities
@@ -140,17 +135,17 @@ export type {
 /**
  * Content type union for posts, cuts, and events
  */
-export type ContentType = 'post' | 'cut' | 'event';
+export type ContentType = "post" | "cut" | "event";
 
 /**
  * Report status union
  */
-export type ReportStatus = 'pending' | 'dismissed' | 'resolved';
+export type ReportStatus = "pending" | "dismissed" | "resolved";
 
 /**
  * Advertisement status union
  */
-export type AdStatus = 'active' | 'paused' | 'completed';
+export type AdStatus = "active" | "paused" | "completed";
 
 /**
  * Generic async state for data fetching
@@ -176,7 +171,7 @@ export interface NavItem {
   label: string;
   href: string;
   icon?: React.ComponentType;
-  requiredRole?: 'super_admin' | 'admin';
+  requiredRole?: "super_admin" | "admin";
 }
 
 /**
@@ -213,6 +208,5 @@ export interface FilterState {
  */
 export interface SortState {
   field: string;
-  direction: 'asc' | 'desc';
+  direction: "asc" | "desc";
 }
-

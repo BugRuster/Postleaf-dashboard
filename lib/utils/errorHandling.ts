@@ -3,8 +3,8 @@
  * Centralized error handling and display functions
  */
 
-import { AxiosError } from 'axios';
-import { toast } from 'sonner';
+import { AxiosError } from "axios";
+import { toast } from "sonner";
 
 /**
  * Validation error interface
@@ -27,7 +27,9 @@ export interface ApiErrorResponse {
  * Handle network errors (no response from server)
  */
 export function handleNetworkError(): void {
-  toast.error('Unable to connect to server. Please check your internet connection.');
+  toast.error(
+    "Unable to connect to server. Please check your internet connection.",
+  );
 }
 
 /**
@@ -35,7 +37,7 @@ export function handleNetworkError(): void {
  * Note: Token clearing and redirect is handled by API client interceptor
  */
 export function handleUnauthorized(): void {
-  toast.error('Your session has expired. Please log in again.');
+  toast.error("Your session has expired. Please log in again.");
 }
 
 /**
@@ -52,15 +54,17 @@ export function handleForbidden(): void {
  */
 export function handleValidationError(errors: ValidationError[]): string {
   if (errors.length === 0) {
-    return 'Validation failed. Please check your input.';
+    return "Validation failed. Please check your input.";
   }
-  
+
   if (errors.length === 1) {
     return errors[0].message;
   }
-  
+
   // Multiple validation errors
-  const errorMessages = errors.map(err => `${err.field}: ${err.message}`).join(', ');
+  const errorMessages = errors
+    .map((err) => `${err.field}: ${err.message}`)
+    .join(", ");
   toast.error(`Validation errors: ${errorMessages}`);
   return errorMessages;
 }
@@ -70,8 +74,8 @@ export function handleValidationError(errors: ValidationError[]): string {
  * @param error - The error object
  */
 export function handleServerError(error: Error): void {
-  console.error('Server error:', error);
-  toast.error('Something went wrong. Please try again later.');
+  console.error("Server error:", error);
+  toast.error("Something went wrong. Please try again later.");
 }
 
 /**
@@ -84,49 +88,55 @@ export function handleApiError(error: unknown): void {
     if (error.response) {
       const status = error.response.status;
       const data = error.response.data as ApiErrorResponse;
-      
+
       switch (status) {
         case 401:
           handleUnauthorized();
           break;
-          
+
         case 403:
           handleForbidden();
           break;
-          
+
         case 400:
           if (data.errors && Array.isArray(data.errors)) {
             handleValidationError(data.errors);
           } else {
-            toast.error(data.message || data.error || 'Invalid request. Please check your input.');
+            toast.error(
+              data.message ||
+                data.error ||
+                "Invalid request. Please check your input.",
+            );
           }
           break;
-          
+
         case 404:
-          toast.error(data.message || 'The requested resource was not found.');
+          toast.error(data.message || "The requested resource was not found.");
           break;
-          
+
         case 500:
         case 502:
         case 503:
         case 504:
-          handleServerError(new Error(data.message || 'Server error'));
+          handleServerError(new Error(data.message || "Server error"));
           break;
-          
+
         default:
-          toast.error(data.message || data.error || 'An unexpected error occurred.');
+          toast.error(
+            data.message || data.error || "An unexpected error occurred.",
+          );
       }
     } else if (error.request) {
       // Network error - no response received
       handleNetworkError();
     } else {
       // Other errors
-      toast.error(error.message || 'An unexpected error occurred.');
+      toast.error(error.message || "An unexpected error occurred.");
     }
   } else if (error instanceof Error) {
     toast.error(error.message);
   } else {
-    toast.error('An unexpected error occurred.');
+    toast.error("An unexpected error occurred.");
   }
 }
 

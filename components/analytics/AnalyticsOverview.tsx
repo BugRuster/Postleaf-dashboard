@@ -1,22 +1,44 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { GoHome } from "react-icons/go"
-import { IoCalendarOutline } from "react-icons/io5"
-import { Eye, Heart, ChatCircle, TrendUp } from "@phosphor-icons/react"
-import { CutsIcon } from "@/components/icons/cuts-icon"
-import type { AnalyticsData } from "@/lib/api/analytics"
-import Link from "next/link"
-import Image from "next/image"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import {
+  Eye,
+  Heart,
+  ChatCircle,
+  TrendUp,
+  House,
+  CalendarBlank,
+} from "@phosphor-icons/react";
+import { CutsIcon } from "@/components/icons/cuts-icon";
+import type { AnalyticsData } from "@/lib/api/analytics";
+import Link from "next/link";
+import Image from "next/image";
 
 interface AnalyticsOverviewProps {
-  data: AnalyticsData | null
-  loading?: boolean
+  data: AnalyticsData | null;
+  loading?: boolean;
 }
 
 export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
@@ -35,15 +57,17 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Skeleton className="h-[400px]" />
         <Skeleton className="h-[400px]" />
       </div>
-    )
+    );
   }
 
   if (!data) {
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-950 p-4">
-        <p className="text-sm text-red-800 dark:text-red-200">No analytics data available</p>
+        <p className="text-sm text-red-800 dark:text-red-200">
+          No analytics data available
+        </p>
       </div>
-    )
+    );
   }
 
   // Prepare chart data for content overview
@@ -68,14 +92,14 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
       views: data.events.views || 0,
       registrations: data.events.registrations || 0,
     },
-  ]
+  ];
 
   // Engagement data
   const engagementData = [
     { name: "Views", value: data.totalViews || 0 },
     { name: "Likes", value: data.totalLikes || 0 },
     { name: "Comments", value: data.totalComments || 0 },
-  ]
+  ];
 
   const chartConfig = {
     count: {
@@ -113,34 +137,34 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         dark: "hsl(220, 70%, 65%)",
       },
     },
-  }
+  };
 
   const getContentIcon = (type: string) => {
-    const normalized = type?.toLowerCase?.()
+    const normalized = type?.toLowerCase?.();
     switch (normalized) {
-      case 'post':
-        return <GoHome className="h-4 w-4" />
-      case 'cut':
-        return <CutsIcon className="h-4 w-4" filled />
-      case 'event':
-        return <IoCalendarOutline className="h-4 w-4" />
+      case "post":
+        return <House className="h-4 w-4" />;
+      case "cut":
+        return <CutsIcon className="h-4 w-4" filled />;
+      case "event":
+        return <CalendarBlank className="h-4 w-4" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   const getContentBadgeColor = (type: string) => {
     switch (type) {
-      case 'post':
-        return 'default'
-      case 'cut':
-        return 'secondary'
-      case 'event':
-        return 'outline'
+      case "post":
+        return "default";
+      case "cut":
+        return "secondary";
+      case "event":
+        return "outline";
       default:
-        return 'default'
+        return "default";
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -152,8 +176,12 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
             <Eye className="h-4 w-4 text-muted-foreground" weight="fill" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(data.totalViews || 0).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">Across all content</p>
+            <div className="text-2xl font-bold">
+              {(data.totalViews || 0).toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Across all content
+            </p>
           </CardContent>
         </Card>
 
@@ -163,19 +191,30 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
             <Heart className="h-4 w-4 text-muted-foreground" weight="fill" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(data.totalLikes || 0).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">All interactions</p>
+            <div className="text-2xl font-bold">
+              {(data.totalLikes || 0).toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              All interactions
+            </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Comments</CardTitle>
-            <ChatCircle className="h-4 w-4 text-muted-foreground" weight="fill" />
+            <ChatCircle
+              className="h-4 w-4 text-muted-foreground"
+              weight="fill"
+            />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(data.totalComments || 0).toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">Total discussions</p>
+            <div className="text-2xl font-bold">
+              {(data.totalComments || 0).toLocaleString()}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Total discussions
+            </p>
           </CardContent>
         </Card>
 
@@ -185,8 +224,12 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
             <TrendUp className="h-4 w-4 text-muted-foreground" weight="fill" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{(data.engagementRate || 0).toFixed(2)}%</div>
-            <p className="text-xs text-muted-foreground mt-1">Engagement rate</p>
+            <div className="text-2xl font-bold">
+              {(data.engagementRate || 0).toFixed(2)}%
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Engagement rate
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -197,25 +240,31 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader>
             <CardTitle>Content Performance</CardTitle>
-            <CardDescription>Views, likes, and comments by content type</CardDescription>
+            <CardDescription>
+              Views, likes, and comments by content type
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ChartContainer config={chartConfig} className="h-[300px]">
               <BarChart data={contentChartData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="contentType" 
-                  tick={{ fill: 'hsl(var(--foreground))' }}
+                <XAxis
+                  dataKey="contentType"
+                  tick={{ fill: "hsl(var(--foreground))" }}
                   stroke="hsl(var(--border))"
                 />
-                <YAxis 
-                  tick={{ fill: 'hsl(var(--foreground))' }}
+                <YAxis
+                  tick={{ fill: "hsl(var(--foreground))" }}
                   stroke="hsl(var(--border))"
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="views" fill="var(--color-views)" radius={4} />
                 <Bar dataKey="likes" fill="var(--color-likes)" radius={4} />
-                <Bar dataKey="comments" fill="var(--color-comments)" radius={4} />
+                <Bar
+                  dataKey="comments"
+                  fill="var(--color-comments)"
+                  radius={4}
+                />
               </BarChart>
             </ChartContainer>
           </CardContent>
@@ -231,13 +280,13 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
             <ChartContainer config={chartConfig} className="h-[300px]">
               <BarChart data={engagementData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis 
-                  dataKey="name" 
-                  tick={{ fill: 'hsl(var(--foreground))' }}
+                <XAxis
+                  dataKey="name"
+                  tick={{ fill: "hsl(var(--foreground))" }}
                   stroke="hsl(var(--border))"
                 />
-                <YAxis 
-                  tick={{ fill: 'hsl(var(--foreground))' }}
+                <YAxis
+                  tick={{ fill: "hsl(var(--foreground))" }}
                   stroke="hsl(var(--border))"
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
@@ -253,22 +302,28 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Posts</CardTitle>
-            <GoHome className="h-4 w-4 text-muted-foreground" />
+            <House className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.posts.count}</div>
             <div className="mt-2 space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>Views:</span>
-                <span className="font-medium">{data.posts.views.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.posts.views.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Likes:</span>
-                <span className="font-medium">{data.posts.likes.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.posts.likes.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Comments:</span>
-                <span className="font-medium">{data.posts.comments.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.posts.comments.toLocaleString()}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -284,15 +339,21 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
             <div className="mt-2 space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>Views:</span>
-                <span className="font-medium">{data.cuts.views.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.cuts.views.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Likes:</span>
-                <span className="font-medium">{data.cuts.likes.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.cuts.likes.toLocaleString()}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span>Comments:</span>
-                <span className="font-medium">{data.cuts.comments.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.cuts.comments.toLocaleString()}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -301,14 +362,16 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Events</CardTitle>
-            <IoCalendarOutline className="h-4 w-4 text-muted-foreground" />
+            <CalendarBlank className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{data.events.count}</div>
             <div className="mt-2 space-y-1 text-xs text-muted-foreground">
               <div className="flex justify-between">
                 <span>Views:</span>
-                <span className="font-medium">{data.events.views.toLocaleString()}</span>
+                <span className="font-medium">
+                  {data.events.views.toLocaleString()}
+                </span>
               </div>
             </div>
           </CardContent>
@@ -320,7 +383,9 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         <Card>
           <CardHeader>
             <CardTitle>Active Advertisements</CardTitle>
-            <CardDescription>Your currently running ads and their performance</CardDescription>
+            <CardDescription>
+              Your currently running ads and their performance
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -341,23 +406,25 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                     <TableCell>
                       <div className="w-16 h-16 relative rounded overflow-hidden bg-muted">
                         {ad.imageUrl || ad.mediaUrl ? (
-                          ad.type === 'cut' || (ad.type === 'post' && (ad as any).content?.type === 'video') ? (
+                          ad.type === "cut" ||
+                          (ad.type === "post" &&
+                            (ad as any).content?.type === "video") ? (
                             <video
-                              src={ad.mediaUrl || ad.imageUrl || ''}
+                              src={ad.mediaUrl || ad.imageUrl || ""}
                               className="w-full h-full object-cover"
                               muted
                               preload="metadata"
                             />
                           ) : (
                             <Image
-                              src={ad.imageUrl || ad.mediaUrl || ''}
+                              src={ad.imageUrl || ad.mediaUrl || ""}
                               alt={ad.title}
                               fill
                               className="object-cover"
                               unoptimized
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
+                                target.style.display = "none";
                               }}
                             />
                           )
@@ -369,7 +436,10 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={getContentBadgeColor(ad.type)} className="flex items-center gap-1 w-fit">
+                      <Badge
+                        variant={getContentBadgeColor(ad.type)}
+                        className="flex items-center gap-1 w-fit"
+                      >
                         {getContentIcon(ad.type)}
                         <span className="capitalize">{ad.type}</span>
                       </Badge>
@@ -379,14 +449,20 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Eye className="h-3 w-3 text-muted-foreground" weight="fill" />
+                        <Eye
+                          className="h-3 w-3 text-muted-foreground"
+                          weight="fill"
+                        />
                         {ad.views.toLocaleString()}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      {ad.type !== 'event' ? (
+                      {ad.type !== "event" ? (
                         <div className="flex items-center justify-end gap-1">
-                          <Heart className="h-3 w-3 text-muted-foreground" weight="fill" />
+                          <Heart
+                            className="h-3 w-3 text-muted-foreground"
+                            weight="fill"
+                          />
                           {ad.likes.toLocaleString()}
                         </div>
                       ) : (
@@ -394,9 +470,12 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      {ad.type !== 'event' ? (
+                      {ad.type !== "event" ? (
                         <div className="flex items-center justify-end gap-1">
-                          <ChatCircle className="h-3 w-3 text-muted-foreground" weight="fill" />
+                          <ChatCircle
+                            className="h-3 w-3 text-muted-foreground"
+                            weight="fill"
+                          />
                           {ad.comments.toLocaleString()}
                         </div>
                       ) : (
@@ -404,7 +483,7 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                       )}
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link 
+                      <Link
                         href={`/dashboard/analytics/${ad.type}/${ad.id}`}
                         className="text-sm text-primary hover:underline"
                       >
@@ -423,7 +502,9 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
       <Card>
         <CardHeader>
           <CardTitle>Top Performing Content</CardTitle>
-          <CardDescription>Most viewed content across all types</CardDescription>
+          <CardDescription>
+            Most viewed content across all types
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {data.topContent && data.topContent.length > 0 ? (
@@ -443,23 +524,25 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                     <TableCell>
                       <div className="w-16 h-16 relative rounded overflow-hidden bg-muted">
                         {content.imageUrl || content.mediaUrl ? (
-                          content.type === 'cut' || (content.type === 'post' && (content as any).contentType === 'video') ? (
+                          content.type === "cut" ||
+                          (content.type === "post" &&
+                            (content as any).contentType === "video") ? (
                             <video
-                              src={content.mediaUrl || content.imageUrl || ''}
+                              src={content.mediaUrl || content.imageUrl || ""}
                               className="w-full h-full object-cover"
                               muted
                               preload="metadata"
                             />
                           ) : (
                             <Image
-                              src={content.imageUrl || content.mediaUrl || ''}
+                              src={content.imageUrl || content.mediaUrl || ""}
                               alt={content.title}
                               fill
                               className="object-cover"
                               unoptimized
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
+                                target.style.display = "none";
                               }}
                             />
                           )
@@ -472,12 +555,17 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <Badge variant={getContentBadgeColor(content.type)} className="flex items-center gap-1 w-fit">
+                        <Badge
+                          variant={getContentBadgeColor(content.type)}
+                          className="flex items-center gap-1 w-fit"
+                        >
                           {getContentIcon(content.type)}
                           <span className="capitalize">{content.type}</span>
                         </Badge>
                         {content.isAd && (
-                          <Badge variant="secondary" className="text-xs">Ad</Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            Ad
+                          </Badge>
                         )}
                       </div>
                     </TableCell>
@@ -486,12 +574,15 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Eye className="h-3 w-3 text-muted-foreground" weight="fill" />
+                        <Eye
+                          className="h-3 w-3 text-muted-foreground"
+                          weight="fill"
+                        />
                         {content.views.toLocaleString()}
                       </div>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Link 
+                      <Link
                         href={`/dashboard/analytics/${content.type}/${content.id}`}
                         className="text-sm text-primary hover:underline"
                       >
@@ -510,5 +601,5 @@ export function AnalyticsOverview({ data, loading }: AnalyticsOverviewProps) {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

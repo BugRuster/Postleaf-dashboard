@@ -3,17 +3,22 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/dashboard/Sidebar";
-import { getUser, isAuthenticated, isAdminExpired, logout } from "@/lib/auth/token";
+import {
+  getUser,
+  isAuthenticated,
+  isAdminExpired,
+  logout,
+} from "@/lib/auth/token";
 import { ErrorBoundary } from "@/components/error-boundary";
 
 // Create context for sidebar toggle
 const SidebarContext = createContext<{
-  toggleSidebar: () => void
+  toggleSidebar: () => void;
 }>({
-  toggleSidebar: () => {}
-})
+  toggleSidebar: () => {},
+});
 
-export const useSidebar = () => useContext(SidebarContext)
+export const useSidebar = () => useContext(SidebarContext);
 
 export default function DashboardLayout({
   children,
@@ -38,10 +43,12 @@ export default function DashboardLayout({
       return;
     }
 
-    // Set user role
+    // Defer setState to avoid synchronous setState in effect (cascading renders)
     const role = currentUser.role === "user" ? "admin" : currentUser.role;
-    setUserRole(role as "admin" | "super_admin");
-    setIsLoading(false);
+    queueMicrotask(() => {
+      setUserRole(role as "admin" | "super_admin");
+      setIsLoading(false);
+    });
 
     // Check if admin status is expired on mount
     if (isAdminExpired()) {
@@ -75,18 +82,18 @@ export default function DashboardLayout({
   }
 
   return (
-    <SidebarContext.Provider value={{ toggleSidebar: () => setIsMobileSidebarOpen(true) }}>
+    <SidebarContext.Provider
+      value={{ toggleSidebar: () => setIsMobileSidebarOpen(true) }}
+    >
       <div className="flex h-screen overflow-hidden">
-        <Sidebar 
-          userRole={userRole} 
+        <Sidebar
+          userRole={userRole}
           isMobileOpen={isMobileSidebarOpen}
           onMobileClose={() => setIsMobileSidebarOpen(false)}
         />
         <main className="flex-1 overflow-y-auto">
           <div className="container mx-auto p-6">
-            <ErrorBoundary>
-              {children}
-            </ErrorBoundary>
+            <ErrorBoundary>{children}</ErrorBoundary>
           </div>
         </main>
       </div>

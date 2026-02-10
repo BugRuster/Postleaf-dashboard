@@ -3,17 +3,17 @@
  * Handles JWT token storage and retrieval using localStorage
  */
 
-import type { User } from '@/lib/api/auth';
+import type { User } from "@/lib/api/auth";
 
-const TOKEN_KEY = 'admin_dashboard_token';
-const USER_KEY = 'admin_dashboard_user';
+const TOKEN_KEY = "admin_dashboard_token";
+const USER_KEY = "admin_dashboard_user";
 
 /**
  * Retrieves the JWT token from localStorage
  * @returns The stored token or null if not found
  */
 export function getToken(): string | null {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
   return localStorage.getItem(TOKEN_KEY);
@@ -24,7 +24,7 @@ export function getToken(): string | null {
  * @param token - The JWT token to store
  */
 export function setToken(token: string): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
   localStorage.setItem(TOKEN_KEY, token);
@@ -34,7 +34,7 @@ export function setToken(token: string): void {
  * Removes the JWT token from localStorage
  */
 export function removeToken(): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
   localStorage.removeItem(TOKEN_KEY);
@@ -54,7 +54,7 @@ export function isAuthenticated(): boolean {
  * @param user - The user data to store
  */
 export function setUser(user: User): void {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return;
   }
   localStorage.setItem(USER_KEY, JSON.stringify(user));
@@ -65,14 +65,14 @@ export function setUser(user: User): void {
  * @returns The stored user data or null if not found
  */
 export function getUser(): User | null {
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     return null;
   }
   const userData = localStorage.getItem(USER_KEY);
   if (!userData) {
     return null;
   }
-  
+
   try {
     return JSON.parse(userData) as User;
   } catch {
@@ -86,14 +86,14 @@ export function getUser(): User | null {
  */
 export function isAdminExpired(): boolean {
   const user = getUser();
-  
+
   if (!user || !user.adminExpiryTime) {
     return false;
   }
-  
+
   const expiryTime = new Date(user.adminExpiryTime);
   const currentTime = new Date();
-  
+
   return currentTime >= expiryTime;
 }
 
@@ -104,8 +104,8 @@ export function isAdminExpired(): boolean {
  */
 export function logout(redirect: boolean = false): void {
   removeToken();
-  
-  if (redirect && typeof window !== 'undefined') {
-    window.location.href = '/login';
+
+  if (redirect && typeof window !== "undefined") {
+    window.location.href = "/login";
   }
 }

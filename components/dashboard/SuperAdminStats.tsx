@@ -3,15 +3,15 @@
  * Displays key statistics for super admin dashboard
  */
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Users, Flag, UserGear } from "@phosphor-icons/react"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Users, Flag, UserGear } from "@phosphor-icons/react";
 
 interface SuperAdminStatsProps {
-  totalAdmins: number
-  totalSuperAdmins: number
-  pendingReports: number
-  loading?: boolean
+  totalAdmins: number;
+  totalSuperAdmins: number;
+  pendingReports: number;
+  loading?: boolean;
 }
 
 export function SuperAdminStats({
@@ -42,12 +42,12 @@ export function SuperAdminStats({
       color: "text-yellow-600 dark:text-yellow-400",
       bgColor: "bg-yellow-500/10",
     },
-  ]
+  ];
 
   return (
     <div className="grid gap-4 md:grid-cols-3">
       {stats.map((stat) => {
-        const Icon = stat.icon
+        const Icon = stat.icon;
         return (
           <Card key={stat.title}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -62,12 +62,14 @@ export function SuperAdminStats({
               {loading ? (
                 <Skeleton className="h-8 w-24" />
               ) : (
-                <div className="text-2xl font-bold">{stat.value.toLocaleString()}</div>
+                <div className="text-2xl font-bold">
+                  {stat.value.toLocaleString()}
+                </div>
               )}
             </CardContent>
           </Card>
-        )
+        );
       })}
     </div>
-  )
+  );
 }

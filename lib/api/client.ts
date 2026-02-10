@@ -3,9 +3,13 @@
  * Handles HTTP requests with JWT token injection and error handling
  */
 
-import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'axios';
-import { getToken, removeToken } from '@/lib/auth/token';
-import { handleApiError } from '@/lib/utils/errorHandling';
+import axios, {
+  AxiosError,
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+} from "axios";
+import { getToken, removeToken } from "@/lib/auth/token";
+import { handleApiError } from "@/lib/utils/errorHandling";
 
 /**
  * API Error interface for typed error handling
@@ -20,10 +24,10 @@ export interface ApiError {
  * Create and configure the Axios client instance
  */
 const apiClient: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1",
   timeout: 10000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -40,7 +44,7 @@ apiClient.interceptors.request.use(
   },
   (error: AxiosError) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 /**
@@ -55,16 +59,19 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       removeToken();
       // Only redirect if not already on the login page
-      if (typeof window !== 'undefined' && !window.location.pathname.includes('/login')) {
-        window.location.href = '/login';
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.includes("/login")
+      ) {
+        window.location.href = "/login";
       }
     }
-    
+
     // Use centralized error handler for displaying messages
     handleApiError(error);
-    
+
     return Promise.reject(error);
-  }
+  },
 );
 
 export default apiClient;

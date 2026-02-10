@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { isAuthenticated } from "@/lib/auth/token"
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { isAuthenticated } from "@/lib/auth/token";
 
 export default function Page() {
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     // Check if user is authenticated
     if (isAuthenticated()) {
       // Redirect authenticated users to dashboard
-      router.push("/dashboard")
+      router.push("/dashboard");
     } else {
       // Redirect unauthenticated users to login
-      router.push("/login")
+      router.push("/login");
     }
-  }, [router])
+  }, [router]);
 
   // Show loading state while redirecting
   return (
@@ -26,5 +26,5 @@ export default function Page() {
         <p className="mt-4 text-gray-600">Loading...</p>
       </div>
     </div>
-  )
+  );
 }

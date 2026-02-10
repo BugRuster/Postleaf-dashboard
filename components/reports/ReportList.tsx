@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Report } from "@/lib/api/reports"
+import { Report } from "@/lib/api/reports";
 import {
   Table,
   TableBody,
@@ -9,18 +8,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ReportListProps {
-  reports: Report[]
-  currentPage: number
-  totalPages: number
-  onPageChange: (page: number) => void
-  onView: (report: Report) => void
-  loading?: boolean
+  reports: Report[];
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  onView: (report: Report) => void;
+  loading?: boolean;
 }
 
 export function ReportList({
@@ -31,44 +30,45 @@ export function ReportList({
   onView,
   loading = false,
 }: ReportListProps) {
-
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-  const getStatusVariant = (status: Report['status']) => {
+  const getStatusVariant = (status: Report["status"]) => {
     switch (status) {
-      case 'pending':
-        return 'default'
-      case 'dismissed':
-        return 'secondary'
-      case 'resolved':
-        return 'outline'
+      case "pending":
+        return "default";
+      case "dismissed":
+        return "secondary";
+      case "resolved":
+        return "outline";
       default:
-        return 'secondary'
+        return "secondary";
     }
-  }
+  };
 
-  const getContentTypeVariant = (contentType: Report['contentType']) => {
+  const getContentTypeVariant = (contentType: Report["contentType"]) => {
     switch (contentType) {
-      case 'post':
-        return 'default'
-      case 'cut':
-        return 'secondary'
-      case 'event':
-        return 'outline'
-      case 'user':
-        return 'destructive'
+      case "post":
+        return "default";
+      case "cut":
+        return "secondary";
+      case "event":
+        return "outline";
+      case "user":
+        return "destructive";
+      case "comment":
+        return "secondary";
       default:
-        return 'secondary'
+        return "secondary";
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -78,7 +78,7 @@ export function ReportList({
         <Skeleton className="h-10 w-full" />
         <Skeleton className="h-10 w-full" />
       </div>
-    )
+    );
   }
 
   return (
@@ -98,7 +98,10 @@ export function ReportList({
           <TableBody>
             {!reports?.length ? (
               <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center text-muted-foreground">
+                <TableCell
+                  colSpan={6}
+                  className="h-24 text-center text-muted-foreground"
+                >
                   No reports found
                 </TableCell>
               </TableRow>
@@ -106,15 +109,27 @@ export function ReportList({
               reports.map((report) => (
                 <TableRow key={report.id}>
                   <TableCell>
-                    <Badge variant={getContentTypeVariant(report.contentType)} className="font-normal">
+                    <Badge
+                      variant={getContentTypeVariant(report.contentType)}
+                      className="font-normal"
+                    >
                       {report.contentType}
                     </Badge>
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate">{report.reason}</TableCell>
-                  <TableCell className="text-muted-foreground">{report.reportedBy}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{formatDate(report.reportedAt)}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">
+                    {report.reason}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground">
+                    {report.reportedBy}
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-sm">
+                    {formatDate(report.reportedAt)}
+                  </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusVariant(report.status)} className="font-normal">
+                    <Badge
+                      variant={getStatusVariant(report.status)}
+                      className="font-normal"
+                    >
                       {report.status}
                     </Badge>
                   </TableCell>
@@ -136,7 +151,9 @@ export function ReportList({
       </div>
 
       <div className="flex items-center justify-between text-sm text-muted-foreground">
-        <span>Page {currentPage} of {totalPages}</span>
+        <span>
+          Page {currentPage} of {totalPages}
+        </span>
         <div className="flex gap-1">
           <Button
             variant="ghost"
@@ -159,5 +176,5 @@ export function ReportList({
         </div>
       </div>
     </div>
-  )
+  );
 }

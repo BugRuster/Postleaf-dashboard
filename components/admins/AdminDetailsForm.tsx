@@ -8,10 +8,7 @@ import {
   updateAdminValidity,
   updateAdminCredits,
 } from "@/lib/api/admins";
-import {
-  creditsSchema,
-  type CreditsFormData,
-} from "@/lib/utils/validation";
+import { creditsSchema, type CreditsFormData } from "@/lib/utils/validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -48,13 +45,19 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [validityDialogOpen, setValidityDialogOpen] = useState(false);
   const [creditsDialogOpen, setCreditsDialogOpen] = useState(false);
-  const [pendingValidityData, setPendingValidityData] = useState<number | null>(null);
-  const [pendingCreditsData, setPendingCreditsData] = useState<number | null>(null);
+  const [pendingValidityData, setPendingValidityData] = useState<number | null>(
+    null,
+  );
+  const [pendingCreditsData, setPendingCreditsData] = useState<number | null>(
+    null,
+  );
   const [currentTime, setCurrentTime] = useState(new Date());
-  
+
   // Validity state
-  const [validityMode, setValidityMode] = useState<'15' | '30' | 'custom'>('15');
-  const [customValidity, setCustomValidity] = useState<string>('');
+  const [validityMode, setValidityMode] = useState<"15" | "30" | "custom">(
+    "15",
+  );
+  const [customValidity, setCustomValidity] = useState<string>("");
 
   // Update current time every second for live countdown
   useEffect(() => {
@@ -70,23 +73,29 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
     if (!admin.adminExpiryTime) return null;
 
     const expiryDate = new Date(admin.adminExpiryTime);
-    console.log('Admin Expiry Time:', expiryDate.toLocaleString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      timeZoneName: 'short'
-    }));
-    
+    console.log(
+      "Admin Expiry Time:",
+      expiryDate.toLocaleString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        timeZoneName: "short",
+      }),
+    );
+
     const diffMs = expiryDate.getTime() - currentTime.getTime();
 
-    if (diffMs <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
+    if (diffMs <= 0)
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, expired: true };
 
     const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const hours = Math.floor(
+      (diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+    );
     const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
@@ -109,11 +118,11 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
 
   const handleValiditySubmit = () => {
     let days: number;
-    
-    if (validityMode === 'custom') {
+
+    if (validityMode === "custom") {
       days = parseFloat(customValidity);
       if (isNaN(days) || days <= 0) {
-        setErrorMessage('Please enter a valid positive number');
+        setErrorMessage("Please enter a valid positive number");
         return;
       }
     } else {
@@ -140,13 +149,15 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
       await updateAdminValidity(admin._id, {
         validity: pendingValidityData,
       });
-      setSuccessMessage(`Validity updated to ${pendingValidityData} days successfully`);
+      setSuccessMessage(
+        `Validity updated to ${pendingValidityData} days successfully`,
+      );
       setValidityDialogOpen(false);
       setPendingValidityData(null);
       onUpdate();
     } catch (error) {
-      console.error('Failed to update validity:', error);
-      setErrorMessage('Failed to update validity. Please try again.');
+      console.error("Failed to update validity:", error);
+      setErrorMessage("Failed to update validity. Please try again.");
     } finally {
       setIsUpdatingValidity(false);
     }
@@ -163,13 +174,13 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
       await updateAdminCredits(admin._id, {
         credits: pendingCreditsData,
       });
-      setSuccessMessage('Credits updated successfully');
+      setSuccessMessage("Credits updated successfully");
       setCreditsDialogOpen(false);
       setPendingCreditsData(null);
       onUpdate();
     } catch (error) {
-      console.error('Failed to update credits:', error);
-      setErrorMessage('Failed to update credits. Please try again.');
+      console.error("Failed to update credits:", error);
+      setErrorMessage("Failed to update credits. Please try again.");
     } finally {
       setIsUpdatingCredits(false);
     }
@@ -195,7 +206,9 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Username</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Username
+              </p>
               <p className="text-base font-medium">@{admin.username}</p>
             </div>
             <div className="space-y-1">
@@ -212,20 +225,26 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
               </Badge>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Allocated Credits</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Allocated Credits
+              </p>
               <p className="text-base font-medium">{admin.allocated_credits}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Available Credits</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Available Credits
+              </p>
               <p className="text-base font-medium">{admin.available_credits}</p>
             </div>
             <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Created At</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Created At
+              </p>
               <p className="text-base font-medium">
-                {new Date(admin.createdAt).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
+                {new Date(admin.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
                 })}
               </p>
             </div>
@@ -251,7 +270,10 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" weight="fill" />
+                <Clock
+                  className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                  weight="fill"
+                />
               </div>
               <div>
                 <CardTitle>Validity Period</CardTitle>
@@ -273,30 +295,48 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
                     {remainingTime.expired ? "Expired" : "Active"}
                   </Badge>
                 </div>
-                
+
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-3">
                     Time Remaining
                   </p>
                   {remainingTime.expired ? (
-                    <p className="text-sm text-destructive">Account has expired</p>
+                    <p className="text-sm text-destructive">
+                      Account has expired
+                    </p>
                   ) : (
                     <div className="grid grid-cols-4 gap-2">
                       <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
-                        <span className="text-2xl font-bold">{remainingTime.days}</span>
-                        <span className="text-xs text-muted-foreground mt-1">days</span>
+                        <span className="text-2xl font-bold">
+                          {remainingTime.days}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1">
+                          days
+                        </span>
                       </div>
                       <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
-                        <span className="text-2xl font-bold">{remainingTime.hours}</span>
-                        <span className="text-xs text-muted-foreground mt-1">hours</span>
+                        <span className="text-2xl font-bold">
+                          {remainingTime.hours}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1">
+                          hours
+                        </span>
                       </div>
                       <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
-                        <span className="text-2xl font-bold">{remainingTime.minutes}</span>
-                        <span className="text-xs text-muted-foreground mt-1">mins</span>
+                        <span className="text-2xl font-bold">
+                          {remainingTime.minutes}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1">
+                          mins
+                        </span>
                       </div>
                       <div className="flex flex-col items-center px-2 py-3 bg-background rounded-lg border">
-                        <span className="text-2xl font-bold">{remainingTime.seconds}</span>
-                        <span className="text-xs text-muted-foreground mt-1">secs</span>
+                        <span className="text-2xl font-bold">
+                          {remainingTime.seconds}
+                        </span>
+                        <span className="text-xs text-muted-foreground mt-1">
+                          secs
+                        </span>
                       </div>
                     </div>
                   )}
@@ -306,13 +346,17 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground pt-2 border-t">
                     <Calendar className="h-4 w-4" />
                     <span>
-                      Expires on {new Date(admin.adminExpiryTime).toLocaleDateString('en-US', {
-                        month: 'long',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                      Expires on{" "}
+                      {new Date(admin.adminExpiryTime).toLocaleDateString(
+                        "en-US",
+                        {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        },
+                      )}
                     </span>
                   </div>
                 )}
@@ -322,7 +366,12 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
             {/* Validity Options */}
             <div className="space-y-3">
               <FieldLabel>Select Validity Period</FieldLabel>
-              <Tabs value={validityMode} onValueChange={(v) => setValidityMode(v as '15' | '30' | 'custom')}>
+              <Tabs
+                value={validityMode}
+                onValueChange={(v) =>
+                  setValidityMode(v as "15" | "30" | "custom")
+                }
+              >
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="15">15 Days</TabsTrigger>
                   <TabsTrigger value="30">30 Days</TabsTrigger>
@@ -356,7 +405,10 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
           <CardHeader>
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                <Coins className="h-5 w-5 text-green-600 dark:text-green-400" weight="fill" />
+                <Coins
+                  className="h-5 w-5 text-green-600 dark:text-green-400"
+                  weight="fill"
+                />
               </div>
               <div>
                 <CardTitle>Credits Management</CardTitle>
@@ -374,24 +426,32 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
                   <p className="text-sm font-medium text-muted-foreground">
                     Allocated Credits
                   </p>
-                  <p className="text-3xl font-bold">{admin.allocated_credits}</p>
+                  <p className="text-3xl font-bold">
+                    {admin.allocated_credits}
+                  </p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">
                     Available Credits
                   </p>
-                  <p className="text-3xl font-bold">{admin.available_credits}</p>
+                  <p className="text-3xl font-bold">
+                    {admin.available_credits}
+                  </p>
                 </div>
               </div>
               <div className="mt-3 pt-3 border-t">
                 <p className="text-xs text-muted-foreground">
-                  Used: {admin.allocated_credits - admin.available_credits} credits
+                  Used: {admin.allocated_credits - admin.available_credits}{" "}
+                  credits
                 </p>
               </div>
             </div>
 
             {/* Credits Form */}
-            <form onSubmit={handleSubmitCredits(onSubmitCredits)} className="space-y-4">
+            <form
+              onSubmit={handleSubmitCredits(onSubmitCredits)}
+              className="space-y-4"
+            >
               <Field>
                 <FieldLabel htmlFor="credits">New Allocated Credits</FieldLabel>
                 <Input
@@ -435,11 +495,15 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
               <br />
               <br />
               This will extend their admin access until{" "}
-              {pendingValidityData && new Date(Date.now() + pendingValidityData * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
-                month: 'long',
-                day: 'numeric',
-                year: 'numeric'
-              })}.
+              {pendingValidityData &&
+                new Date(
+                  Date.now() + pendingValidityData * 24 * 60 * 60 * 1000,
+                ).toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })}
+              .
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -467,7 +531,8 @@ export function AdminDetailsForm({ admin, onUpdate }: AdminDetailsFormProps) {
               <strong>{pendingCreditsData} credits</strong>?
               <br />
               <br />
-              Current: {admin.allocated_credits} credits → New: {pendingCreditsData} credits
+              Current: {admin.allocated_credits} credits → New:{" "}
+              {pendingCreditsData} credits
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

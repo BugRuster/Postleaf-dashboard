@@ -16,10 +16,10 @@ This module provides centralized error handling utilities for the Admin Dashboar
 The `handleApiError` function is automatically called by the Axios interceptor for all API errors:
 
 ```typescript
-import { handleApiError } from '@/lib/utils/errorHandling';
+import { handleApiError } from "@/lib/utils/errorHandling";
 
 try {
-  const response = await apiClient.get('/endpoint');
+  const response = await apiClient.get("/endpoint");
 } catch (error) {
   handleApiError(error); // Automatically displays appropriate toast
 }
@@ -28,32 +28,37 @@ try {
 ### Manual Toast Notifications
 
 ```typescript
-import { showSuccess, showError, showWarning, showInfo } from '@/lib/utils/errorHandling';
+import {
+  showSuccess,
+  showError,
+  showWarning,
+  showInfo,
+} from "@/lib/utils/errorHandling";
 
 // Success message
-showSuccess('Admin updated successfully');
+showSuccess("Admin updated successfully");
 
 // Error message
-showError('Failed to update admin');
+showError("Failed to update admin");
 
 // Warning message
-showWarning('Your session will expire soon');
+showWarning("Your session will expire soon");
 
 // Info message
-showInfo('New features available');
+showInfo("New features available");
 ```
 
 ### Loading States
 
 ```typescript
-import { showLoading, dismissToast } from '@/lib/utils/errorHandling';
+import { showLoading, dismissToast } from "@/lib/utils/errorHandling";
 
-const toastId = showLoading('Updating admin...');
+const toastId = showLoading("Updating admin...");
 
 try {
   await updateAdmin(data);
   dismissToast(toastId);
-  showSuccess('Admin updated successfully');
+  showSuccess("Admin updated successfully");
 } catch (error) {
   dismissToast(toastId);
   handleApiError(error);
@@ -79,7 +84,7 @@ function MyPage() {
 Or use the HOC wrapper:
 
 ```typescript
-import { withErrorBoundary } from '@/components/error-boundary';
+import { withErrorBoundary } from "@/components/error-boundary";
 
 const MyComponent = () => {
   // Component code
@@ -91,35 +96,43 @@ export default withErrorBoundary(MyComponent);
 ## Error Types
 
 ### Network Errors
+
 - **Message**: "Unable to connect to server. Please check your internet connection."
 - **When**: No response from server
 
 ### 401 Unauthorized
+
 - **Message**: "Your session has expired. Please log in again."
 - **Action**: Clears token and redirects to login
 
 ### 403 Forbidden
+
 - **Message**: "You don't have permission to perform this action."
 - **When**: User lacks required permissions
 
 ### 400 Validation Errors
+
 - **Message**: Displays specific field errors
 - **When**: Request validation fails
 
 ### 404 Not Found
+
 - **Message**: "The requested resource was not found."
 - **When**: Resource doesn't exist
 
 ### 500+ Server Errors
+
 - **Message**: "Something went wrong. Please try again later."
 - **When**: Server-side errors
 
 ## Global Error Pages
 
 ### app/error.tsx
+
 Catches errors in the app directory (client-side errors)
 
 ### app/global-error.tsx
+
 Catches errors in the root layout (critical errors)
 
 ## Best Practices

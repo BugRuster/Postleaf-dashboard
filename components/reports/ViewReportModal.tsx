@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Trash, X } from "@phosphor-icons/react";
 import { toast } from "sonner";
+import Image from "next/image";
 
 interface ViewReportModalProps {
   report: Report;
@@ -64,8 +65,13 @@ export function ViewReportModal({
   const handleDeleteConfirm = async () => {
     setLoading(true);
     try {
-      const result = await resolveReport(report.id, report.contentType as 'post' | 'cut' | 'user');
-      toast.success(result.message || `${report.contentType} deleted successfully`);
+      const result = await resolveReport(
+        report.id,
+        report.contentType as "post" | "cut" | "user" | "comment",
+      );
+      toast.success(
+        result.message || `${report.contentType} deleted successfully`,
+      );
       setDeleteDialogOpen(false);
       onSuccess();
       onOpenChange(false);
@@ -79,7 +85,9 @@ export function ViewReportModal({
 
   const renderContent = () => {
     if (!reportDetails) {
-      return <p className="text-sm text-muted-foreground">Loading content...</p>;
+      return (
+        <p className="text-sm text-muted-foreground">Loading content...</p>
+      );
     }
 
     // Post content
@@ -90,16 +98,23 @@ export function ViewReportModal({
           <div>
             <h3 className="text-sm font-medium mb-2">Post Content</h3>
             {post.caption && (
-              <p className="text-sm text-muted-foreground mb-3">{post.caption}</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                {post.caption}
+              </p>
             )}
             {post.image_url && post.image_url.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
                 {post.image_url.map((url, index) => (
-                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden bg-muted">
-                    <img
+                  <div
+                    key={index}
+                    className="relative aspect-square rounded-lg overflow-hidden bg-muted"
+                  >
+                    <Image
                       src={url}
                       alt={`Post image ${index + 1}`}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                   </div>
                 ))}
@@ -118,15 +133,13 @@ export function ViewReportModal({
           <div>
             <h3 className="text-sm font-medium mb-2">Cut Content</h3>
             {cut.caption && (
-              <p className="text-sm text-muted-foreground mb-3">{cut.caption}</p>
+              <p className="text-sm text-muted-foreground mb-3">
+                {cut.caption}
+              </p>
             )}
             {cut.media_url && (
               <div className="relative aspect-video rounded-lg overflow-hidden bg-muted">
-                <video
-                  src={cut.media_url}
-                  controls
-                  className="w-full h-full"
-                />
+                <video src={cut.media_url} controls className="w-full h-full" />
               </div>
             )}
           </div>
@@ -144,18 +157,39 @@ export function ViewReportModal({
             <div className="flex items-center gap-4">
               {user.profile_picture && (
                 <div className="relative w-16 h-16 rounded-full overflow-hidden bg-muted">
-                  <img
+                  <Image
                     src={user.profile_picture}
                     alt={user.username || "User"}
-                    className="w-full h-full object-cover"
+                    width={64}
+                    height={64}
+                    className="object-cover"
+                    unoptimized
                   />
                 </div>
               )}
               <div>
                 <p className="font-medium">{user.username || "Unknown"}</p>
-                <p className="text-sm text-muted-foreground">{user.email || "No email"}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user.email || "No email"}
+                </p>
               </div>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Comment content
+    if (report.contentType === "comment" && reportDetails.comment_id) {
+      const comment = reportDetails.comment_id;
+      const text = comment.text ?? comment.body ?? "—";
+      return (
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-medium mb-2">Comment</h3>
+            <p className="text-sm text-muted-foreground whitespace-pre-wrap">
+              {text}
+            </p>
           </div>
         </div>
       );
@@ -167,7 +201,8 @@ export function ViewReportModal({
         <div className="space-y-4">
           <div className="p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground">
-              Event reports are not supported yet. This feature will be available in the future.
+              Event reports are not supported yet. This feature will be
+              available in the future.
             </p>
           </div>
         </div>
@@ -189,11 +224,7 @@ export function ViewReportModal({
 
     return (
       <>
-        <Button
-          variant="outline"
-          onClick={handleDismiss}
-          disabled={loading}
-        >
+        <Button variant="outline" onClick={handleDismiss} disabled={loading}>
           <X className="h-4 w-4 mr-2" />
           Dismiss
         </Button>
@@ -244,14 +275,10 @@ export function ViewReportModal({
               <p className="text-sm font-medium">{report.reason}</p>
             </div>
 
-            <div className="border-t pt-4">
-              {renderContent()}
-            </div>
+            <div className="border-t pt-4">{renderContent()}</div>
           </div>
 
-          <DialogFooter>
-            {renderActions()}
-          </DialogFooter>
+          <DialogFooter>{renderActions()}</DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -260,7 +287,8 @@ export function ViewReportModal({
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the {report.contentType} and mark the report as resolved.
+              This action cannot be undone. This will permanently delete the{" "}
+              {report.contentType} and mark the report as resolved.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -1,98 +1,111 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { User as PhosphorUser, Envelope, Shield, Coins, Calendar, SignOut } from "@phosphor-icons/react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Badge } from "@/components/ui/badge"
-import { PageHeader } from "@/components/dashboard/PageHeader"
-import { useSidebar } from "@/app/dashboard/layout"
-import { getUser, removeToken } from "@/lib/auth/token"
-import { getAdminStatus } from "@/lib/api/admins"
-import type { User as AuthUser } from "@/lib/api/auth"
-import type { AdminStatus } from "@/lib/types"
-import { toast } from "sonner"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  User as PhosphorUser,
+  Envelope,
+  Shield,
+  Coins,
+  Calendar,
+  SignOut,
+} from "@phosphor-icons/react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/dashboard/PageHeader";
+import { useSidebar } from "@/app/dashboard/layout";
+import { getUser, removeToken } from "@/lib/auth/token";
+import { getAdminStatus } from "@/lib/api/admins";
+import type { User as AuthUser } from "@/lib/api/auth";
+import type { AdminStatus } from "@/lib/types";
+import { toast } from "sonner";
 
 export function ProfileContent() {
-  const { toggleSidebar } = useSidebar()
-  const router = useRouter()
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [adminStatus, setAdminStatus] = useState<AdminStatus | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [adminStatusLoading, setAdminStatusLoading] = useState(false)
-  const [adminStatusError, setAdminStatusError] = useState<string | null>(null)
+  const { toggleSidebar } = useSidebar();
+  const router = useRouter();
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [adminStatus, setAdminStatus] = useState<AdminStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [adminStatusLoading, setAdminStatusLoading] = useState(false);
+  const [adminStatusError, setAdminStatusError] = useState<string | null>(null);
 
   // Calculate remaining time from expiry date
   const calculateRemainingTime = (expiryTime: string | null) => {
     if (!expiryTime) {
-      return { expired: true, days: 0, hours: 0, minutes: 0 }
+      return { expired: true, days: 0, hours: 0, minutes: 0 };
     }
 
-    const now = new Date().getTime()
-    const expiry = new Date(expiryTime).getTime()
-    const diff = expiry - now
+    const now = new Date().getTime();
+    const expiry = new Date(expiryTime).getTime();
+    const diff = expiry - now;
 
     if (diff <= 0) {
-      return { expired: true, days: 0, hours: 0, minutes: 0 }
+      return { expired: true, days: 0, hours: 0, minutes: 0 };
     }
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
-    return { expired: false, days, hours, minutes }
-  }
+    return { expired: false, days, hours, minutes };
+  };
 
-  const remainingTime = adminStatus?.adminExpiryTime 
+  const remainingTime = adminStatus?.adminExpiryTime
     ? calculateRemainingTime(adminStatus.adminExpiryTime)
-    : { expired: true, days: 0, hours: 0, minutes: 0 }
+    : { expired: true, days: 0, hours: 0, minutes: 0 };
 
   useEffect(() => {
     async function loadProfile() {
       try {
         // Get user from token using the helper function
-        const userData = getUser()
-        
+        const userData = getUser();
+
         if (!userData) {
-          router.push("/login")
-          return
+          router.push("/login");
+          return;
         }
 
-        setUser(userData)
+        setUser(userData);
 
         // Fetch admin status only for admins (not super_admins)
         if (userData.role === "admin") {
-          setAdminStatusLoading(true)
-          setAdminStatusError(null)
+          setAdminStatusLoading(true);
+          setAdminStatusError(null);
           try {
-            const status = await getAdminStatus(userData._id)
-            setAdminStatus(status)
+            const status = await getAdminStatus(userData._id);
+            setAdminStatus(status);
           } catch (error) {
-            console.error("Failed to fetch admin status:", error)
-            setAdminStatusError("Failed to load admin status")
-            toast.error("Failed to load admin status")
+            console.error("Failed to fetch admin status:", error);
+            setAdminStatusError("Failed to load admin status");
+            toast.error("Failed to load admin status");
           } finally {
-            setAdminStatusLoading(false)
+            setAdminStatusLoading(false);
           }
         }
       } catch (error) {
-        console.error("Failed to load profile:", error)
-        toast.error("Failed to load profile data")
+        console.error("Failed to load profile:", error);
+        toast.error("Failed to load profile data");
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
 
-    loadProfile()
-  }, [router])
+    loadProfile();
+  }, [router]);
 
   const handleLogout = () => {
-    removeToken()
-    router.push("/login")
-  }
+    removeToken();
+    router.push("/login");
+  };
 
   if (loading) {
     return (
@@ -109,7 +122,7 @@ export function ProfileContent() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
   if (!user) {
@@ -121,10 +134,11 @@ export function ProfileContent() {
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }
 
-  const fullName = `${user.first_name} ${user.last_name}`.trim() || user.username
+  const fullName =
+    `${user.first_name} ${user.last_name}`.trim() || user.username;
 
   return (
     <div className="container mx-auto max-w-4xl space-y-6 p-6">
@@ -154,7 +168,9 @@ export function ProfileContent() {
           <div className="flex items-start gap-3">
             <PhosphorUser className="mt-1 size-5 text-muted-foreground" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-muted-foreground">Username</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                Username
+              </p>
               <p className="text-base">@{user.username}</p>
             </div>
           </div>
@@ -176,7 +192,11 @@ export function ProfileContent() {
             <div className="flex-1">
               <p className="text-sm font-medium text-muted-foreground">Role</p>
               <div className="mt-1">
-                <Badge variant={user.role === "super_admin" ? "default" : "secondary"}>
+                <Badge
+                  variant={
+                    user.role === "super_admin" ? "default" : "secondary"
+                  }
+                >
                   {user.role === "super_admin" ? "Super Admin" : "Admin"}
                 </Badge>
               </div>
@@ -208,9 +228,15 @@ export function ProfileContent() {
                 <div className="flex items-start gap-3">
                   <Coins className="mt-1 size-5 text-muted-foreground" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-muted-foreground">Allocated Credits</p>
-                    <p className="text-2xl font-bold">{adminStatus.allocated_credits}</p>
-                    <p className="text-sm text-muted-foreground">Total credits allocated</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Allocated Credits
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {adminStatus.allocated_credits}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Total credits allocated
+                    </p>
                   </div>
                 </div>
 
@@ -219,9 +245,15 @@ export function ProfileContent() {
                 <div className="flex items-start gap-3">
                   <Coins className="mt-1 size-5 text-muted-foreground" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-muted-foreground">Available Credits</p>
-                    <p className="text-2xl font-bold">{adminStatus.available_credits}</p>
-                    <p className="text-sm text-muted-foreground">Credits available for advertisements</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Available Credits
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {adminStatus.available_credits}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Credits available for advertisements
+                    </p>
                   </div>
                 </div>
 
@@ -230,28 +262,45 @@ export function ProfileContent() {
                 <div className="flex items-start gap-3">
                   <Calendar className="mt-1 size-5 text-muted-foreground" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-muted-foreground">Validity</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Validity
+                    </p>
                     {remainingTime.expired ? (
-                      <p className="text-sm text-destructive">No time remaining</p>
+                      <p className="text-sm text-destructive">
+                        No time remaining
+                      </p>
                     ) : (
                       <div className="mt-2 flex gap-3">
                         <div className="flex flex-col items-center rounded-md bg-muted px-3 py-2">
-                          <span className="text-2xl font-bold">{remainingTime.days}</span>
-                          <span className="text-xs text-muted-foreground">days</span>
+                          <span className="text-2xl font-bold">
+                            {remainingTime.days}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            days
+                          </span>
                         </div>
                         <div className="flex flex-col items-center rounded-md bg-muted px-3 py-2">
-                          <span className="text-2xl font-bold">{remainingTime.hours}</span>
-                          <span className="text-xs text-muted-foreground">hrs</span>
+                          <span className="text-2xl font-bold">
+                            {remainingTime.hours}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            hrs
+                          </span>
                         </div>
                         <div className="flex flex-col items-center rounded-md bg-muted px-3 py-2">
-                          <span className="text-2xl font-bold">{remainingTime.minutes}</span>
-                          <span className="text-xs text-muted-foreground">mins</span>
+                          <span className="text-2xl font-bold">
+                            {remainingTime.minutes}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            mins
+                          </span>
                         </div>
                       </div>
                     )}
                     {adminStatus.adminExpiryTime && (
                       <p className="mt-2 text-sm text-muted-foreground">
-                        Expires: {new Date(adminStatus.adminExpiryTime).toLocaleString()}
+                        Expires:{" "}
+                        {new Date(adminStatus.adminExpiryTime).toLocaleString()}
                       </p>
                     )}
                   </div>
@@ -262,8 +311,12 @@ export function ProfileContent() {
                 <div className="flex items-start gap-3">
                   <Shield className="mt-1 size-5 text-muted-foreground" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-muted-foreground">Active Advertisements</p>
-                    <p className="text-2xl font-bold">{adminStatus.activeAds?.total ?? 0}</p>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Active Advertisements
+                    </p>
+                    <p className="text-2xl font-bold">
+                      {adminStatus.activeAds?.total ?? 0}
+                    </p>
                     <div className="mt-2 space-y-1 text-sm text-muted-foreground">
                       <p>Posts: {adminStatus.activeAds?.posts ?? 0}</p>
                       <p>Cuts: {adminStatus.activeAds?.cuts ?? 0}</p>
@@ -273,7 +326,9 @@ export function ProfileContent() {
                 </div>
               </>
             ) : (
-              <p className="text-sm text-muted-foreground">No admin status data available</p>
+              <p className="text-sm text-muted-foreground">
+                No admin status data available
+              </p>
             )}
           </CardContent>
         </Card>
@@ -297,5 +352,5 @@ export function ProfileContent() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

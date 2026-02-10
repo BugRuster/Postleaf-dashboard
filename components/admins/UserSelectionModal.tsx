@@ -55,7 +55,9 @@ export function UserSelectionModal({
     setLoading(true);
     try {
       const response = await getAllUsers(reset ? undefined : cursor);
-      setUsers((prev) => reset ? response.data.users : [...prev, ...response.data.users]);
+      setUsers((prev) =>
+        reset ? response.data.users : [...prev, ...response.data.users],
+      );
       setCursor(response.data.meta.cursor);
       setHasMore(response.data.meta.hasMore);
     } catch (error) {
@@ -112,7 +114,7 @@ export function UserSelectionModal({
           loadUsers();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     const currentTarget = observerTarget.current;
@@ -146,7 +148,7 @@ export function UserSelectionModal({
 
   const handlePromoteConfirm = async () => {
     if (!selectedUser) return;
-    
+
     setPromotingUserId(selectedUser._id);
     try {
       await onPromote(selectedUser._id);
@@ -229,11 +231,15 @@ export function UserSelectionModal({
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm User Promotion</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to promote <strong>@{selectedUser?.username}</strong>
+              Are you sure you want to promote{" "}
+              <strong>@{selectedUser?.username}</strong>
               {selectedUser?.first_name && selectedUser?.last_name && (
-                <> ({selectedUser.first_name} {selectedUser.last_name})</>
-              )} to admin? 
-              This will grant them administrative privileges.
+                <>
+                  {" "}
+                  ({selectedUser.first_name} {selectedUser.last_name})
+                </>
+              )}{" "}
+              to admin? This will grant them administrative privileges.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

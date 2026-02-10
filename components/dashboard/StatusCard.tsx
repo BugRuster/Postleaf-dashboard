@@ -13,12 +13,19 @@ export interface StatusCardProps {
   loading?: boolean;
 }
 
-export function StatusCard({ title, value, icon: Icon, loading = false }: StatusCardProps) {
+export function StatusCard({
+  title,
+  value,
+  icon: Icon,
+  loading = false,
+}: StatusCardProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
-          <span className="text-sm font-medium text-muted-foreground">{title}</span>
+          <span className="text-sm font-medium text-muted-foreground">
+            {title}
+          </span>
           {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
         </CardTitle>
       </CardHeader>
