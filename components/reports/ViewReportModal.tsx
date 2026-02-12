@@ -182,7 +182,7 @@ export function ViewReportModal({
     // Comment content
     if (report.contentType === "comment" && reportDetails.comment_id) {
       const comment = reportDetails.comment_id;
-      const text = comment.text ?? comment.body ?? "—";
+      const text = comment.comment_text ?? comment.text ?? comment.body ?? "—";
       return (
         <div className="space-y-4">
           <div>
