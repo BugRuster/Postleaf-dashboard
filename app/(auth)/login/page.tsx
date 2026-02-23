@@ -78,17 +78,19 @@ export default function LoginPage() {
 
       router.push("/dashboard");
     } catch (error: unknown) {
-      if (error && typeof error === "object" && "response" in error) {
-        const axiosError = error as {
-          response?: {
-            status: number;
-            data?: {
-              message?: string;
-              error?: string;
-            };
-          };
-        };
+      const axiosError =
+        error &&
+        typeof error === "object" &&
+        "response" in error
+          ? (error as {
+              response?: {
+                status?: number;
+                data?: { message?: string; error?: string };
+              };
+            })
+          : null;
 
+      if (axiosError?.response) {
         const backendMessage =
           axiosError.response?.data?.message ||
           axiosError.response?.data?.error;
@@ -265,16 +267,14 @@ export default function LoginPage() {
           <div className="text-center text-xs text-gray-500 dark:text-gray-500">
             By continuing, you agree to our{" "}
             <Link
-              href="https://postleaf.live/tandc.html"
-              target="_blank"
+              href="/terms"
               className="underline hover:text-gray-700 dark:hover:text-gray-300"
             >
               Terms
             </Link>{" "}
             and{" "}
             <Link
-              href="https://postleaf.live/privacypolicy.html"
-              target="_blank"
+              href="/privacy"
               className="underline hover:text-gray-700 dark:hover:text-gray-300"
             >
               Privacy Policy
