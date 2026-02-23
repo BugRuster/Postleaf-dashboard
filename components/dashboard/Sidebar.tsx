@@ -13,6 +13,8 @@ import {
   UserCircle,
   Moon,
   Sun,
+  FileText,
+  ShieldCheck,
   type Icon as PhosphorIcon,
 } from "@phosphor-icons/react";
 import { Separator } from "@/components/ui/separator";
@@ -67,6 +69,18 @@ const navItems: NavItem[] = [
     label: "Analytics",
     href: "/dashboard/analytics",
     icon: ChartBar,
+    requiredRole: "admin",
+  },
+  {
+    label: "Terms & Conditions",
+    href: "/dashboard/terms",
+    icon: FileText,
+    requiredRole: "admin",
+  },
+  {
+    label: "Privacy Policy",
+    href: "/dashboard/privacy",
+    icon: ShieldCheck,
     requiredRole: "admin",
   },
 ];
